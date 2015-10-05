@@ -4,8 +4,8 @@ var BaseView = function() {
 
 module.exports = (View) => {
 
-	return function() {
+	return function(model) {
 		
-		return new View();
+		return new View(model);
 	};
 };
