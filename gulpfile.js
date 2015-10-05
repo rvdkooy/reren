@@ -12,7 +12,9 @@ gulp.task("compilejs", function() {
         },
         output: {
             path: __dirname + "/dist",
-            filename: '[name].js'
+            filename: '[name].js',
+            library: 'Reren',
+            libraryTarget: 'umd'
         },
         watch: true,
         module: {
