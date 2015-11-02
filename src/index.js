@@ -1,3 +1,5 @@
+var vDom = require('./vDom');
+
 var _rootNode;
 var _prevView;
 var _mainController;
@@ -6,9 +8,11 @@ module.exports.start = (controller, rootNode) => {
 	_mainController = controller;
 	_rootNode = rootNode || document.body;
 
-	var newView = controller.getView();
-	_prevView = newView;
-	_rootNode.appendChild(newView);
+	_prevView = _mainController.getView();
+
+	var newDom = vDom.parse(_prevView);
+
+	_rootNode.appendChild(newDom);
 };
 
 module.exports.controller = require('./controller');
@@ -19,9 +23,13 @@ module.exports.element = require('./element');
 
 module.exports.reRender = () => {
 	
-	// somewhere here we need smart diffing
-	_rootNode.removeChild(_rootNode.childNodes[0]);
+	if(_rootNode.childNodes.length) {
+		_rootNode.removeChild(_rootNode.childNodes[0]);	
+	}
 
-	var newView = _mainController.getView();
-	_rootNode.appendChild(newView)
+	var virtualView = _mainController.getView();
+
+	var newDom = vDom.parse(virtualView);
+
+	_rootNode.appendChild(newDom)
 };

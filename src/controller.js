@@ -11,8 +11,6 @@ var BaseController = function () {
 	};		
 };
 
-
-
 module.exports = (Ctrl) => {
 	Ctrl.prototype = new BaseController();
     Ctrl.constructor = Ctrl;
