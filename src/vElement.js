@@ -3,12 +3,14 @@ var vElement = function(tag, attr, inner) {
 
 	this.tag = tag;
 	this.attributes = attr;
+	this.children = [];
 
-	if (typeof inner !== "array") {
+	if (inner instanceof vElement) {
+		this.children.push(inner);
+	} else if(typeof inner === "string" || 
+				typeof inner === "number"){
 		this.content = inner;
 	}
-
-	//this.children = children || null;
 }
 
 module.exports = (tagName, attributes, children) => {

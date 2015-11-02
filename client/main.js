@@ -2,7 +2,10 @@
 
 	// The view
 	var myview = Reren.view(function(model) {
-		return Reren.element("span", { style: "font-size: 72px;color: red" }, model.text);
+		
+		return Reren.element("div", null, 
+			Reren.element("span", { style: "font-size: 72px;color: red" }, model.text)
+		);
 	});
 
 	// Main controller

@@ -5,33 +5,33 @@ var ID_ATTR = "data-internal-id";
 var parse = (rootNode, vNode) => {
 	
 	var level = 1;
-	var counter = 1;
+	var counter = 0;
 	var changes = [];
 
 	function internalParse(parent, _vNode) {
 		
 		counter++;
 		var searchId = level + "_" + counter;
-		var existingElement = document.querySelectorAll("*[" + ID_ATTR + "='"+ searchId + "']");
-		console.log("searching for ID: ", searchId);
+		var foundElementsInDom = parent.querySelectorAll("*[" + ID_ATTR + "='"+ searchId + "']");
+		var currentElement;
 
-
-		if(existingElement.length) {
-			changes = changes.concat(getChangesBetween(existingElement[0], _vNode));
+		if(foundElementsInDom.length) {
+			currentElement = foundElementsInDom[0];
+			changes = changes.concat(getChangesBetween(currentElement, _vNode));
 		} else {
-			changes.push(function() {
-				var newElement = createNewElement(_vNode, searchId);
-				existingElement = newElement;
+			var newElement = createNewElement(_vNode, searchId);
+			currentElement = newElement;
+			changes.push(() => {
 				parent.appendChild(newElement);
 			});
 		}
 
 		// if _vNode has children:
-		// _vNode.children.forEach((child) => {
-		// 	level = counter;
-		// 	counter = 1;
-		// 	internalParse(existingElement, child);
-		// });
+		_vNode.children.forEach((child) => {
+			level = counter;
+			counter = 1;
+			internalParse(currentElement, child);
+		});
 	};
 
 	internalParse(rootNode, vNode);
@@ -73,7 +73,7 @@ function createNewElement(vNode, internalId) {
 function getChangesBetween(element, vNode) {
 	var result = [];
 
-	if(element.innerHTML !== vNode.content) {
+	if(vNode.content && element.innerHTML !== vNode.content) {
 		result.push(function() {
 			element.innerHTML = vNode.content;
 		});
