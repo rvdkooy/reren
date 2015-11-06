@@ -1,15 +1,15 @@
 
-var vElement = function(tag, attr, inner) {
+var vElement = function(tag, attr, children) {
 
 	this.tag = tag;
 	this.attributes = attr;
 	this.children = [];
 
-	if (inner instanceof vElement) {
-		this.children.push(inner);
-	} else if(typeof inner === "string" || 
-				typeof inner === "number"){
-		this.content = inner;
+	if (children instanceof vElement) {
+		this.children.push(children);
+	} else if(typeof children === "string" || 
+				typeof children === "number"){
+		this.content = children;
 	}
 }
 

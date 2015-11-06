@@ -2,7 +2,7 @@ var vElement = require('./vElement');
 var domUtils = require('./domUtils');
 var ID_ATTR = "data-internal-id";
 
-var parse = (rootNode, vNode) => {
+module.exports.parse = (rootNode, vNode) => {
 	
 	var level = 1;
 	var counter = 0;
@@ -12,21 +12,17 @@ var parse = (rootNode, vNode) => {
 		
 		counter++;
 		var searchId = level + "_" + counter;
-		var foundElementsInDom = parent.querySelectorAll("*[" + ID_ATTR + "='"+ searchId + "']");
-		var currentElement;
+		var currentElement = parent.querySelector("*[" + ID_ATTR + "='"+ searchId + "']");
 
-		if(foundElementsInDom.length) {
-			currentElement = foundElementsInDom[0];
+		if(currentElement) {
 			changes = changes.concat(getChangesBetween(currentElement, _vNode));
 		} else {
-			var newElement = createNewElement(_vNode, searchId);
-			currentElement = newElement;
+			currentElement = createNewElement(_vNode, searchId);
 			changes.push(() => {
-				parent.appendChild(newElement);
+				parent.appendChild(currentElement);
 			});
 		}
 
-		// if _vNode has children:
 		_vNode.children.forEach((child) => {
 			level = counter;
 			counter = 1;
@@ -38,7 +34,7 @@ var parse = (rootNode, vNode) => {
 	return changes;
 };
 
-var apply = function(vElement) {
+module.exports.apply = function(vElement) {
 	var element = document.createElement(vNode.tag);
 	
 	var attributes = vNode.attributes || {};
@@ -80,9 +76,4 @@ function getChangesBetween(element, vNode) {
 	} 
 
 	return result;
-};
-
-module.exports = {
-	parse: parse,
-	apply: apply
 };
