@@ -1,12 +1,49 @@
-module.exports.getElementsByAttribute = (attribute, context) => {
-  var nodeList = (context || document).getElementsByTagName('*');
-  var nodeArray = [];
-  var iterator = 0;
-  var node = null;
+var vElement = require('./vElement');
+var { InsertElement } = require('./domOperations');
+var ID_ATTR = "data-internal-id";
 
-  while (node = nodeList[iterator++]) {
-    if (node.getAttribute(attribute)) nodeArray.push(node);
-  }
+module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
+    rootNode.setAttribute(ID_ATTR, "0");
+    var parentIdentifier = "0";
+    var level = 1;
+    var counter = 0;
+    var operations = [];
 
-  return nodeArray;
+    function internalParse(currentElement, prevElement) {
+        
+        counter++;
+        var identifier = level + "_" + counter;
+
+        if (currentElement && !prevElement) {
+            
+            var insert = new InsertElement(parentIdentifier, identifier, currentElement.tagName, 
+                currentElement.attributes, currentElement.children || currentElement.content);
+
+            operations.push(insert);
+            
+            parentIdentifier = identifier;
+        } 
+        // else {
+        //     // operations = operations.concat(prevNode.getChangesBetween(_vNode));
+        //     // currentElement.getChangesBetween(prevElement);
+
+        if(currentElement.children) {
+            for (var i = 0; i < currentElement.children.length; i++) {
+                
+                level = counter;
+                counter = 1;
+
+                var currentChild = currentElement.children[i];
+                var prevChild;
+
+                internalParse(currentChild, prevChild);
+            };
+        }
+        
+        // }
+    };
+
+    internalParse(newDomRoot, prevDomRoot);
+    
+    return operations;
 };
