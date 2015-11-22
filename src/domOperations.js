@@ -37,6 +37,18 @@ class InsertElement {
     };
 }
 
+class SetInnerHtml {
+
+    constructor(identifier, innerHtml) {
+        this.identifier = identifier;
+        this.innerHtml = innerHtml;
+    }
+    
+    apply() {
+        findElement(this.identifier).innerHTML = this.innerHtml;
+    };
+}
+
 var findElement = function(value) {
     var element = document.querySelector("*[" + ID_ATTR + "='"+ value + "']");
 
@@ -48,3 +60,4 @@ var findElement = function(value) {
 }
 
 module.exports.InsertElement = InsertElement;
+module.exports.SetInnerHtml = SetInnerHtml;

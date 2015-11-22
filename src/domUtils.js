@@ -1,5 +1,5 @@
 var vElement = require('./vElement');
-var { InsertElement } = require('./domOperations');
+var { InsertElement, SetInnerHtml } = require('./domOperations');
 var ID_ATTR = "data-internal-id";
 
 module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
@@ -20,12 +20,11 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
                 currentElement.attributes, currentElement.children || currentElement.content);
 
             operations.push(insert);
-            
-            parentIdentifier = identifier;
-        } 
-        // else {
-        //     // operations = operations.concat(prevNode.getChangesBetween(_vNode));
-        //     // currentElement.getChangesBetween(prevElement);
+        } else {
+            operations = operations.concat(getChangesBetween(identifier, currentElement, prevElement));
+        }
+
+        parentIdentifier = identifier;
 
         if(currentElement.children) {
             for (var i = 0; i < currentElement.children.length; i++) {
@@ -34,7 +33,7 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
                 counter = 1;
 
                 var currentChild = currentElement.children[i];
-                var prevChild;
+                var prevChild = (prevElement) ? prevElement.children[i] : null;
 
                 internalParse(currentChild, prevChild);
             };
@@ -47,3 +46,13 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
     
     return operations;
 };
+
+var getChangesBetween = (indentifier, currentNode, previousNode) => {
+
+    var changes = [];
+
+    if (previousNode.content && (currentNode.content !== previousNode.content)) {
+        changes.push(new SetInnerHtml(indentifier, currentNode.content));
+    }
+    return changes;
+}

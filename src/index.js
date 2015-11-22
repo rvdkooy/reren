@@ -46,12 +46,11 @@ module.exports.start = (controller, rootNode) => {
  * Api method for rerendering the whole App
  */
 module.exports.reRender = () => {
-    // var newView = _mainController.getView();
-    // var newDom = vDom.parse(_rootNode, newView);
+    var newDom = _mainController.getView();
     
-    // applyChanges(newDom);
+    applyChanges(newDom);
 
-    // _prevDom = newDom;
+    _prevDom = newDom;
 };
 
 function applyChanges(vDom) {
