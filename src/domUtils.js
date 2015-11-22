@@ -1,18 +1,14 @@
 var vElement = require('./vElement');
 var { InsertElement, SetInnerHtml } = require('./domOperations');
 var ID_ATTR = "data-internal-id";
+var ROOT_IDENTIFIER = "1";
 
 module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
-    rootNode.setAttribute(ID_ATTR, "0");
-    var parentIdentifier = "0";
-    var level = 1;
-    var counter = 0;
+    rootNode.setAttribute(ID_ATTR, ROOT_IDENTIFIER);
     var operations = [];
 
-    function internalParse(currentElement, prevElement) {
-        
-        counter++;
-        var identifier = level + "_" + counter;
+    function internalParse(currentElement, prevElement, parentIdentifier, counter) {
+        var identifier = parentIdentifier + "_" + counter;
 
         if (currentElement && !prevElement) {
             
@@ -21,38 +17,25 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
 
             operations.push(insert);
         } else {
-            operations = operations.concat(getChangesBetween(identifier, currentElement, prevElement));
+            
+            if (prevElement.content && (currentElement.content !== prevElement.content)) {
+                operations.push(new SetInnerHtml(identifier, currentElement.content));
+            }
         }
 
-        parentIdentifier = identifier;
-
         if(currentElement.children) {
+            
             for (var i = 0; i < currentElement.children.length; i++) {
-                
-                level = counter;
-                counter = 1;
 
                 var currentChild = currentElement.children[i];
                 var prevChild = (prevElement) ? prevElement.children[i] : null;
 
-                internalParse(currentChild, prevChild);
+                internalParse(currentChild, prevChild, identifier, (i+1));
             };
         }
-        
-        // }
     };
 
-    internalParse(newDomRoot, prevDomRoot);
+    internalParse(newDomRoot, prevDomRoot, ROOT_IDENTIFIER, 1);
     
     return operations;
 };
-
-var getChangesBetween = (indentifier, currentNode, previousNode) => {
-
-    var changes = [];
-
-    if (previousNode.content && (currentNode.content !== previousNode.content)) {
-        changes.push(new SetInnerHtml(indentifier, currentNode.content));
-    }
-    return changes;
-}

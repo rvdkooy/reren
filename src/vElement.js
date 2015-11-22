@@ -5,7 +5,11 @@ var vElement = function(tagName, attr, children) {
     this.attributes = attr;
 
     if (typeof children === "object") {
-        this.children = [ children ];
+        if (Array.isArray(children)){
+            this.children = children;
+        } else {
+            this.children = [ children ];
+        }
     } else {
         this.content = children;
     }
