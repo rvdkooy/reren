@@ -1,4 +1,4 @@
-var ID_ATTR = "data-internal-id";
+var variables = require('./variables');
 
 class InsertElement {
 
@@ -23,7 +23,7 @@ class InsertElement {
     
     apply() {
         var element = document.createElement(this.tagName);
-        element.setAttribute(ID_ATTR, this.identifier);
+        element.setAttribute(variables.ID_ATTR, this.identifier);
         
         for(var prop in this.attributes) {
             element.setAttribute(prop, this.attributes[prop]);
@@ -50,14 +50,15 @@ class SetInnerHtml {
 }
 
 var findElement = function(value) {
-    var element = document.querySelector("*[" + ID_ATTR + "='"+ value + "']");
+    var element = document.querySelector("*[" + variables.ID_ATTR + "='"+ value + "']");
 
     if(!element) {
-        throw new Error(`Could not find the element with attribute ${ID_ATTR} and value: ${value}`);
+        throw new Error(`Could not find the element with attribute ${variables.ID_ATTR} and value: ${value}`);
     }
 
     return element;
 }
 
 module.exports.InsertElement = InsertElement;
+
 module.exports.SetInnerHtml = SetInnerHtml;

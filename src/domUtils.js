@@ -1,13 +1,13 @@
 var vElement = require('./vElement');
+var variables = require('./variables');
 var { InsertElement, SetInnerHtml } = require('./domOperations');
-var ID_ATTR = "data-internal-id";
-var ROOT_IDENTIFIER = "1";
 
 module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
-    rootNode.setAttribute(ID_ATTR, ROOT_IDENTIFIER);
+    rootNode.setAttribute(variables.ID_ATTR, variables.ROOT_IDENTIFIER);
     var operations = [];
 
     function internalParse(currentElement, prevElement, parentIdentifier, counter) {
+        counter = counter || 1;
         var identifier = parentIdentifier + "_" + counter;
 
         if (currentElement && !prevElement) {
@@ -35,7 +35,7 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
         }
     };
 
-    internalParse(newDomRoot, prevDomRoot, ROOT_IDENTIFIER, 1);
+    internalParse(newDomRoot, prevDomRoot, variables.ROOT_IDENTIFIER);
     
     return operations;
 };

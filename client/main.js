@@ -2,10 +2,11 @@
 
     var myview = Reren.view(function(model) {
         return Reren.element("div", null, [
-                Reren.element("span", { style: "font-size: 72px;color: red" }, model.text),
-                Reren.element("span", { style: "font-size: 72px;color: blue" }, model.text)
-            ]
-            
+                    Reren.element("div", { style: "background-color: green" }, 
+                        Reren.element("span", { style: "font-size: 72px;color: red" }, model.text)),
+                    Reren.element("div", { style: "background-color: yellow" }, 
+                        Reren.element("span", { style: "font-size: 72px;color: blue" }, model.text))
+                ]
         );
     });
 
