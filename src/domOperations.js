@@ -49,6 +49,18 @@ class SetInnerHtml {
     };
 }
 
+class RemoveElement {
+    constructor(parentId, identifier) {
+        this.parentId = parentId;
+        this.identifier = identifier;
+    }
+
+    apply() {
+        var elementToRemove = findElement(this.identifier);
+        findElement(this.parentId).removeChild(elementToRemove);
+    }
+}
+
 var findElement = function(value) {
     var element = document.querySelector("*[" + variables.ID_ATTR + "='"+ value + "']");
 
@@ -60,5 +72,5 @@ var findElement = function(value) {
 }
 
 module.exports.InsertElement = InsertElement;
-
 module.exports.SetInnerHtml = SetInnerHtml;
+module.exports.RemoveElement = RemoveElement;

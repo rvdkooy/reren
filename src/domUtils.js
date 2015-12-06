@@ -1,6 +1,6 @@
 var vElement = require('./vElement');
 var variables = require('./variables');
-var { InsertElement, SetInnerHtml } = require('./domOperations');
+var { InsertElement, SetInnerHtml, RemoveElement } = require('./domOperations');
 
 module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
     rootNode.setAttribute(variables.ID_ATTR, variables.ROOT_IDENTIFIER);
@@ -16,18 +16,25 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, rootNode) => {
                 currentElement.attributes, currentElement.children || currentElement.content);
 
             operations.push(insert);
-        } else {
+        } 
+        else if(currentElement || prevElement) {
             
-            if (prevElement.content && (currentElement.content !== prevElement.content)) {
+            if(!currentElement && prevElement) {
+
+                operations.push(new RemoveElement(parentIdentifier, identifier));
+
+            } else if (prevElement.content && (currentElement.content !== prevElement.content)) {
+                
                 operations.push(new SetInnerHtml(identifier, currentElement.content));
             }
         }
 
-        if(currentElement.children) {
+        if(currentElement && currentElement.children) {
             
             for (var i = 0; i < currentElement.children.length; i++) {
 
                 var currentChild = currentElement.children[i];
+
                 var prevChild = (prevElement) ? prevElement.children[i] : null;
 
                 internalParse(currentChild, prevChild, identifier, (i+1));
