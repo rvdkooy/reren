@@ -1,25 +1,23 @@
-(function(Reren){
+(function(R){
 
-    var myview = Reren.view(function(model) {
+    var myview = R.view(function(model) {
+        var purpleStyle = { style: "background-color: purple" };
+        var greenStyle = { style: "background-color: green" };
+        var yellowStyle = { style: "background-color: yellow" };
         
-
-        var toggleDiv = null;
-        if(model.counter % 2 === 0) {
-            toggleDiv = Reren.element("div", { style: "background-color: purple" }, 
-                Reren.element("span", { style: "font-size: 72px;color: white" }, model.text));
-        }
-
-        return Reren.element("div", null, [
-                    Reren.element("div", { style: "background-color: green" }, 
-                        Reren.element("span", { style: "font-size: 72px;color: red" }, model.text)),
-                    Reren.element("div", { style: "background-color: yellow" }, 
-                        Reren.element("span", { style: "font-size: 72px;color: blue" }, model.text)),
-                    toggleDiv
+        var optionalDiv = (model.counter % 2 === 0) ?
+            R.div(purpleStyle, R.span({ style: "font-size: 72px;color: white" }, model.text)) :
+            null;
+        
+        return R.div(null, [
+                    R.div(greenStyle, R.span({ style: "font-size: 72px;color: red" }, model.text)),
+                    R.div(yellowStyle, R.span({ style: "font-size: 72px;color: blue" }, model.text)),
+                    optionalDiv
                 ]
         );
     });
 
-    var controller = Reren.controller(function() {
+    var controller = R.controller(function() {
         
         var counter = 1;
         var model = { text: "1" };
@@ -27,12 +25,12 @@
         setInterval(function() {
             model.text = ++counter;
             model.counter = counter;
-            Reren.reRender();
+            R.reRender();
         }, 1000);
 
         this.setView(myview, model);
     });
 
-    Reren.start(controller, document.getElementById('container'));
+    R.start(controller, document.getElementById('container'));
 
 })(window.Reren);

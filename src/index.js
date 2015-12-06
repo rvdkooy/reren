@@ -1,3 +1,4 @@
+var vElement = require('./vElement');
 var domUtils = require('./domUtils');
 var _prevDom = null;
 var _rootNode;
@@ -24,7 +25,7 @@ module.exports.view = require('./view');
  * @children         {The children of the element. 
  *                     this can be antother element, an array of elements or a string }
  */
-module.exports.element = require('./vElement');
+module.exports.element = vElement;
 
 /**
  * Api method for starting up the App
@@ -60,3 +61,9 @@ function applyChanges(vDom) {
         o.apply();
     });
 }
+
+/**
+ * Shorthand helpers from creating common elements like: div, span, button etc
+ */
+module.exports.div = (attr, children) => { return vElement("div", attr, children) };
+module.exports.span = (attr, children) => { return vElement("span", attr, children) };
