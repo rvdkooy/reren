@@ -35,7 +35,17 @@ class InsertElement {
         element.setAttribute(variables.ID_ATTR, this.identifier);
         
         for(var prop in this.attributes) {
-            element.setAttribute(prop, this.attributes[prop]);
+            
+            if(prop === "classes") {
+                element.setAttribute("class", this.attributes[prop]);
+            }
+            else if(prop === "onClick") {
+                element.addEventListener("click", this.attributes[prop]);
+            }
+            else {
+                element.setAttribute(prop, this.attributes[prop]);
+            }
+
         }
 
         if(this.content) {
@@ -70,6 +80,8 @@ class SetInnerHtml {
  */
 class RemoveElement {
     constructor(parentId, identifier) {
+        console.log(`removing element with id: ${identifier} from parent with id: ${parentId}`);
+
         this.parentId = parentId;
         this.identifier = identifier;
     }
@@ -79,11 +91,6 @@ class RemoveElement {
         findElement(this.parentId).removeChild(elementToRemove);
     }
 }
-
-
-/**
- 
- */
 
 /**
  * This method can find an element based on the inner ID attribure

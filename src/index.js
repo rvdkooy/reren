@@ -67,3 +67,11 @@ function applyChanges(vDom) {
  */
 module.exports.div = (attr, children) => { return vElement("div", attr, children) };
 module.exports.span = (attr, children) => { return vElement("span", attr, children) };
+module.exports.p = (attr, children) => { return vElement("p", attr, children) };
+module.exports.button = (attr, children) => { return vElement("button", attr, children) };
+module.exports.table = (attr, children) => { return vElement("table", attr, children) };
+module.exports.thead = (attr, children) => { return vElement("thead", attr, children) };
+module.exports.tbody = (attr, children) => { return vElement("tbody", attr, children) };
+module.exports.th = (attr, children) => { return vElement("th", attr, children) };
+module.exports.tr = (attr, children) => { return vElement("tr", attr, children) };
+module.exports.td = (attr, children) => { return vElement("td", attr, children) };
