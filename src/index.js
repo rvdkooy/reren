@@ -52,13 +52,12 @@ var applyChanges = (vDom) => {
     operations.forEach(o => {
         o.apply();
     });
-}
+};
 
 /**
- * Shorthand helpers from creating common elements like: div, span, button etc
+ * Shorthand helpers from creating common HTML vElements like: div's, span's, button's etc
+ * example: instead of writing: R.element("div", null, OtherElement); --> R.div(null, OtherElement)
  */
-
-
-["div", "span", "p", "button", "table", "thead", "tbody", "th", "tr", "td"].forEach(e => {
+require('./htmlElements').forEach(e => {
     module.exports[e] = (attr, children) => { return vElement(e, attr, children); };
 });
