@@ -2,21 +2,13 @@ var vElement = require('./vElement');
 var domUtils = require('./domUtils');
 var _prevDom = null;
 var _rootNode;
-var _mainController;
+var _rootComponent;
 
 /**
  * Api method for creating a Reren controller
  * @type {The controller function}
  */
-module.exports.controller = require('./controller');
-
-
-/**
- * Api method for creating a Reren view
- * @type {A function that should return a Reren Element tree}
- */
-module.exports.view = require('./view');
-
+module.exports.component = require('./component');
 
 /**
  * Api method for creating Reren a Reren element
@@ -29,14 +21,14 @@ module.exports.element = vElement;
 
 /**
  * Api method for starting up the App
- * @controller         {The root controller to start the app with}
+ * @rootComponent    {The root component to start the app with}
  * @rootNode         {The root DOM node the render all content on}
  */
-module.exports.start = (controller, rootNode) => {
-    _mainController = controller;
+module.exports.start = (rootComponent, rootNode) => {
+    _rootComponent = rootComponent;
     _rootNode = rootNode || document.body;
 
-    var vDom = _mainController.getView();
+    var vDom = _rootComponent.getView();
     
     applyChanges(vDom);
 
@@ -47,14 +39,14 @@ module.exports.start = (controller, rootNode) => {
  * Api method for rerendering the whole App
  */
 module.exports.reRender = () => {
-    var newDom = _mainController.getView();
+    var newDom = _rootComponent.getView();
     
     applyChanges(newDom);
 
     _prevDom = newDom;
 };
 
-function applyChanges(vDom) {
+var applyChanges = (vDom) => {
     var operations = domUtils.getChanges(vDom, _prevDom, _rootNode);
 
     operations.forEach(o => {
