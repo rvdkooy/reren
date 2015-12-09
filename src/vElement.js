@@ -4,13 +4,18 @@ class VElement {
     constructor(tagName, attr, children) {
         this.tagName = tagName;
         this.attributes = attr;
+        this.content = null;
+        this.children = null;
+        this.componentInstance = null;
 
         if (typeof children === "object") {
+            
             if (Array.isArray(children)){
                 this.children = [];
                 children.forEach(child => {
                     if (child instanceof Component) {
-                        this.children.push(child.getView());
+                        var vElementFromComponent = child.getView();
+                        this.children.push(vElementFromComponent);
                     } else {
                         this.children.push(child);
                     }
@@ -18,7 +23,8 @@ class VElement {
             } else {
                 
                 if (children instanceof Component) {
-                    this.children = [ children.getView() ];
+                    var vElementFromComponent = children.getView();
+                    this.children = [ vElementFromComponent ];
                 } else {
                     this.children = [ children ];    
                 }

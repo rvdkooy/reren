@@ -2,9 +2,16 @@
     
     var CounterComponent = R.component({
     	controller: function() {
-    		var model = {
-    			timer: 0
+    		var ViewModel = function() {
+    			var self = this;
+    			this.timer = 0;
+    			this.resetTimer = function() {
+    				self.timer = 0;
+    				R.reRender();
+    			}
     		};
+
+    		var model = new ViewModel();
     		setInterval(() => {
     			model.timer += 1;
     			R.reRender();
@@ -18,8 +25,12 @@
 		                    R.div({ classes: "panel-heading" }, "Counter example"),
 		                    R.div({ classes: "panel-body" }, [
 		                        R.h3(null, model.timer.toString())
+		                    ]),
+		                    R.div({ classes: "panel-footer" }, [ 
+		                        R.button({ type: "button", classes: "btn btn-xs btn-primary", onClick: model.resetTimer }, "Reset timer")
 		                    ])
-		                ])
+		                ]),
+		                
 		            ])
 		        ]);  
     	}
@@ -35,7 +46,7 @@
         	    this.onLoadDataButtonClicked = function() {
         	        
         	        for (var i = 0; i < 250; i++) {
-        	            self.data.push({ name: "Ronald van der Kooij" + (i+1) });
+        	            self.data.push({ name: "Ronald van der Kooij " + (i+1) });
         	        };
 
         	        R.reRender();
@@ -64,9 +75,9 @@
 		                        ])
 		                    ]),
 		                    R.div({ classes: "panel-footer" }, [ 
-		                        R.span({ classes: "label label-success" }, "number of rows in data: " + model.data.length),
-		                        R.button({ type: "button", classes: "btn btn-xs btn-default pull-right", onClick: model.onClearDataButtonClicked }, "Clear Data"),
-		                        R.button({ type: "button", classes: "btn btn-xs btn-primary pull-right", onClick: model.onLoadDataButtonClicked }, "Load Data"),
+		                        R.button({ type: "button", classes: "btn btn-xs btn-primary", onClick: model.onLoadDataButtonClicked }, "Load Data"),
+		                        R.button({ type: "button", classes: "btn btn-xs btn-default", onClick: model.onClearDataButtonClicked }, "Clear Data"),
+		                        R.span({ classes: "label label-success" }, "number of rows in data: " + model.data.length)
 		                    ])
 		                ])
 		            ])

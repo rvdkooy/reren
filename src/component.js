@@ -55,7 +55,9 @@ class Component {
     	if(this._controller) {
     		viewModel = this._controller.getViewModel();
     	}
-        return this._view(viewModel);
+        var rootvElement = this._view(viewModel);
+        rootvElement.componentInstance = this;
+        return rootvElement;
     };
 };
 
