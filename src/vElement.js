@@ -1,3 +1,5 @@
+var { Component } = require('./component');
+
 class VElement {
     constructor(tagName, attr, children) {
         this.tagName = tagName;
@@ -5,9 +7,21 @@ class VElement {
 
         if (typeof children === "object") {
             if (Array.isArray(children)){
-                this.children = children;
+                this.children = [];
+                children.forEach(child => {
+                    if (child instanceof Component) {
+                        this.children.push(child.getView());
+                    } else {
+                        this.children.push(child);
+                    }
+                })
             } else {
-                this.children = [ children ];
+                
+                if (children instanceof Component) {
+                    this.children = [ children.getView() ];
+                } else {
+                    this.children = [ children ];    
+                }
             }
         } else {
             this.content = children;

@@ -35,25 +35,27 @@ class BaseController {
 class Component {
 	
 	constructor(Controller, view) {
-		if (!Controller) {
-			throw new Error("A component should always have a controller!");
-		}
-
 		if (!view) {
 			throw new Error("A component should always have a view!");
 		}
 
+		if (Controller) {
+			Controller.prototype = new BaseController();
+			Controller.constructor = Controller;
+			var ctrl = new Controller();
 
-		Controller.prototype = new BaseController();
-		Controller.constructor = Controller;
-		var ctrl = new Controller();
-
-		this._controller = ctrl;
+			this._controller = ctrl;	
+		}
+		
 		this._view = view;
 	}
 
     getView() {
-        return this._view(this._controller.getViewModel());
+    	var viewModel = null;
+    	if(this._controller) {
+    		viewModel = this._controller.getViewModel();
+    	}
+        return this._view(viewModel);
     };
 };
 
@@ -65,3 +67,6 @@ class Component {
 module.exports = (definition) => {
 	return new Component(definition.controller, definition.view);
 };
+
+module.exports.Component = Component;
+
