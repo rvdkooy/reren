@@ -7,9 +7,14 @@ class VElement {
         this.content = null;
         this.children = null;
         this.componentInstance = null;
-
-        if(tagName instanceof Component) {
-            this.componentInstance = tagName.createInstance();
+        //console.log(typeof tagName);
+        if(typeof tagName === "function") {
+            
+            var componentInstance = new tagName();
+            
+            var vElement = componentInstance.getView();
+            vElement.componentInstance = componentInstance;
+            return vElement;
 
         } else {
             if (typeof children === "object") {

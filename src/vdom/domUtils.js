@@ -8,21 +8,15 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, identifier) => {
     
     var operations = [];
 
-    function internalParse(currentElement, prevElement, identifier, counter) {
-        counter = counter || 1;
+    function internalParse(currentElement, prevElement, identifier) {
         let _currentElement = currentElement;
         let _prevElement = _prevElement;
         let parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"))
-        //var identifier = ;
-
+        
         if(currentElement && currentElement.componentInstance) {
             currentElement.componentInstance.identifier = identifier;
-            _currentElement = currentElement.componentInstance.getView();
         }
-        if(_prevElement && _prevElement.componentInstance) {
-            _prevElement = prevElement.componentInstance.getView();
-        }
-
+        
         if(_currentElement) {
             _currentElement.identifier = identifier
         }
@@ -51,11 +45,11 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, identifier) => {
         // Dealing with innerHTML --> children
         if(_currentElement && _currentElement.children) {
             
-            handleChildren(_currentElement, _prevElement, identifier, counter);
+            handleChildren(_currentElement, _prevElement, identifier);
         }
     };
 
-    function handleChildren(currentElem, prevElem, identifier, counter) {
+    function handleChildren(currentElem, prevElem, identifier) {
         // removing children that are not there anymore: eg: table tr
         if((prevElem && prevElem.children) && currentElem.children.length === 0) {
             for (var i = 0; i < prevElem.children.length; i++) {
@@ -68,8 +62,8 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, identifier) => {
 
             var currentChild = currentElem.children[i];
             var prevChild = (prevElem) ? prevElem.children[i] : null;
-            var parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"));
-            internalParse(currentChild, prevChild, parentIdentifier + "_" + counter, (i+1));
+            // var parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"));
+            internalParse(currentChild, prevChild, identifier + "_" + (i+1));
         };
     }
 

@@ -10,7 +10,7 @@ module.exports.init = (rootComponent, rootNode) => {
 	_rootComponent = rootComponent;
 	rootNode.setAttribute(variables.ID_ATTR, variables.ROOT_IDENTIFIER);
     
-	var vDom = rootComponent.getView();
+	var vDom = rootComponent;
 
     var operations = domUtils.getChanges(vDom, _prevDom, variables.ROOT_IDENTIFIER + "_1");
 

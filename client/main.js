@@ -126,23 +126,30 @@
 		}
 	});
 
+	var RootComponent = R.component({
+    	view: function() {
+    		return R.div({ classes: "container" }, [
+    			R.element(TableComponent),
+    			R.element(CounterComponent),
+    			R.element(ListComponent)
+			]);
+    	}
+    })
+ //    
+ 	var ChildComponent = R.component({
+ 		view: function() {
+ 			return R.div(null, "test");
+ 		}
+ 	});
+
 	// var RootComponent = R.component({
- //    	view: function() {
- //    		return R.div({ classes: "container" }, [
- //    			R.element(TableComponent),
- //    			R.element(CounterComponent),
- //    			R.element(ListComponent)
-	// 		]);
- //    	}
- //    })
-var RootComponent = R.component({
-	view: function() {
-		return R.div(null, R.div(null, "test"))
-	}
-});
+	// 	view: function() {
+	// 		return R.div(null, R.element(ChildComponent))
+	// 	}
+	// });
 
 
 
-    R.start(RootComponent, document.getElementById('container'));
+    R.start(R.element(RootComponent), document.getElementById('container'));
 
 })(window.Reren);
