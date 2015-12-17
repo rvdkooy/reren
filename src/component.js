@@ -38,7 +38,6 @@ var Component = function(definition) {
     	
     	function init() {
     		
-    		console.log('initing');
     		if (!self.view) {
     			throw new Error("A component should always have a view!");
     		}

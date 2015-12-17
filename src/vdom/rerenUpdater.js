@@ -1,4 +1,4 @@
-var domUtils = require('./domUtils');
+var vDomComparer = require('./vDomComparer');
 var documentHelpers = require('./documentHelpers');
 var variables = require('../variables');
 
@@ -12,7 +12,7 @@ module.exports.init = (rootComponent, rootNode) => {
     
 	var vDom = rootComponent;
 
-    var operations = domUtils.getChanges(vDom, _prevDom, variables.ROOT_IDENTIFIER + "_1");
+    var operations = vDomComparer.getChanges(vDom, _prevDom, variables.ROOT_IDENTIFIER + "_1");
 
     operations.forEach(o => {
         o.apply();
@@ -41,7 +41,7 @@ var scheduleUpdate = () => {
 
 		//var parentId = changedComponent.;
 
-		var operations = domUtils.getChanges(newDom, prevDom, changedComponent.identifier);
+		var operations = vDomComparer.getChanges(newDom, prevDom, changedComponent.identifier);
 		operations.forEach(o => {
         	o.apply();
     	});
