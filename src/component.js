@@ -1,11 +1,14 @@
+var rerenUpdater = require('./vdom/rerenUpdater');
+
+
 /**
  * Base class for a Reren controller
  * every controller will be extended by this BaseController
  * so that it will have functions like "setViewModel()" and "update()"
  */
 class BaseController {
-	constructor(reRender) {
-		this._reRender = reRender;
+	constructor(update) {
+		this.update = update;
 	}
 
 	setViewModel(model) {
@@ -15,14 +18,10 @@ class BaseController {
 
         this._model = model;
     };
-    
+    update;
+
     getViewModel() {
     	return this._model;
-    }
-
-    // experimental...
-    update() {
-    	this._reRender();
     }
 };
 
@@ -39,24 +38,34 @@ class Component {
 			throw new Error("A component should always have a view!");
 		}
 
-		if (Controller) {
-			Controller.prototype = new BaseController();
-			Controller.constructor = Controller;
-			var ctrl = new Controller();
-
-			this._controller = ctrl;	
-		}
-		
 		this._view = view;
+		this._controller = Controller;
+	}
+	update() {
+		rerenUpdater.update(this);
+	}
+
+	createInstance() {
+		if (this._controller) {
+			var updater = () => { rerenUpdater.update(this); }
+			this._controller.prototype = new BaseController(updater);
+			this._controller.constructor = this._controller;
+			var ctrl = new this._controller();
+			this._controllerInstance = ctrl;	
+		}
+		return this;
 	}
 
     getView() {
     	var viewModel = null;
-    	if(this._controller) {
-    		viewModel = this._controller.getViewModel();
+    	if(this._controllerInstance) {
+    		viewModel = this._controllerInstance.getViewModel();
     	}
+        
         var rootvElement = this._view(viewModel);
+        
         rootvElement.componentInstance = this;
+        
         return rootvElement;
     };
 };

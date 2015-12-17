@@ -1,4 +1,5 @@
-var variables = require('./variables');
+var variables = require('../variables');
+var documentHelpers = require('./documentHelpers')
 
 /**
  * This DOM operation will insert a new DOM element below the provided parent
@@ -12,6 +13,12 @@ var variables = require('./variables');
 class InsertElement {
 
     constructor(parentId, identifier, tagName, attributes, children) {
+        if(!parentId) {
+            throw new Error("For inserting we need a parentId");  
+        } 
+        if(!identifier) throw new Error("For inserting we need an indentifier");
+        if(!tagName) throw new Error("For inserting we need an tagName");
+        
         this.parentId = parentId;
         this.identifier = identifier;
         this.tagName = tagName;
@@ -52,7 +59,7 @@ class InsertElement {
             element.innerHTML = this.content;
         }
 
-        findElement(this.parentId).appendChild(element);
+        documentHelpers.findElement(this.parentId).appendChild(element);
     };
 }
 
@@ -69,7 +76,7 @@ class SetInnerHtml {
     }
     
     apply() {
-        findElement(this.identifier).innerHTML = this.innerHtml;
+        documentHelpers.findElement(this.identifier).innerHTML = this.innerHtml;
     };
 }
 
@@ -87,25 +94,9 @@ class RemoveElement {
     }
 
     apply() {
-        var elementToRemove = findElement(this.identifier);
-        findElement(this.parentId).removeChild(elementToRemove);
+        var elementToRemove = documentHelpers.findElement(this.identifier);
+        documentHelpers.findElement(this.parentId).removeChild(elementToRemove);
     }
-}
-
-/**
- * This method can find an element based on the inner ID attribure
- * eg: data-internal-id="1_1_2"
- * @value               {The value of the internal id}
- * @return {element}    {The element that we are looking for}
- */
-var findElement = function(value) {
-    var element = document.querySelector("*[" + variables.ID_ATTR + "='"+ value + "']");
-
-    if(!element) {
-        throw new Error(`Could not find the element with attribute ${variables.ID_ATTR} and value: ${value}`);
-    }
-
-    return element;
 }
 
 /**

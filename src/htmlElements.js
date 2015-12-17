@@ -14,5 +14,6 @@ module.exports = [
     "td", "tfoot", "th", "thead", "tr", "button", "datalist", "fieldset", "form", 
     "input", "keygen", "label", "legend", "meter", "optgroup", "option", "output", 
     "progress", "select", "details", "dialog", "menu", "menuitem", "summary", 
-    "content", "element", "shadow", "template"
+    "content", "shadow", "template"
+    // "element"
 ];
