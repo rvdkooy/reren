@@ -1,51 +1,47 @@
-var vElement = require('./vElement');
+var VElement = require('./vElement');
 var variables = require('../variables');
 var { Component } = require('../component');
 
 var { InsertElement, SetInnerHtml, RemoveElement } = require('./domOperations');
 
-module.exports.getChanges = (newDomRoot, prevDomRoot, identifier) => {
+module.exports.getChanges = (newDomRoot, prevDomRoot, rootIdentifier) => {
     
+    if (newDomRoot && !newDomRoot.identifier) {
+        prepareForComparison(newDomRoot, rootIdentifier);
+    }
+
+    if(prevDomRoot && !prevDomRoot.identifier) {
+        prepareForComparison(prevDomRoot,rootIdentifier);
+    }
+
     var operations = [];
 
     function internalParse(currentElement, prevElement, identifier) {
-        let _currentElement = currentElement;
-        let _prevElement = _prevElement;
         let parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"))
-        
-        if(currentElement && currentElement.componentInstance) {
-            currentElement.componentInstance.identifier = identifier;
-        }
-        
-        if(_currentElement) {
-            _currentElement.identifier = identifier
-        }
 
-        if (_currentElement && !_prevElement) {
+        if (currentElement && !prevElement) {
             // if the element could not be found, we insert it now
-            var insert = new InsertElement(parentIdentifier, identifier, _currentElement.tagName, 
-                _currentElement.attributes, _currentElement.children || _currentElement.content);
-
+            var insert = new InsertElement(parentIdentifier, identifier, currentElement.tagName, 
+                currentElement.attributes, currentElement.children || currentElement.content);
             operations.push(insert);
         }
-        else if(_currentElement || _prevElement) {
-            
+        else if(currentElement || prevElement) {
 
-            if(!_currentElement && _prevElement) {
+            if(!currentElement && prevElement) {
                 // if the current element is not there anymore we should remove it
                 operations.push(new RemoveElement(parentIdentifier, identifier));
 
-            } else if (_prevElement.content && (_currentElement.content !== _prevElement.content)) {
+            } else if (prevElement.content && (currentElement.content !== prevElement.content)) {
                 
                 // if the inner content has changed we update it: eg: string
-                operations.push(new SetInnerHtml(identifier, _currentElement.content));
+                operations.push(new SetInnerHtml(identifier, currentElement.content));
             }
         }
 
         // Dealing with innerHTML --> children
-        if(_currentElement && _currentElement.children) {
+        if(currentElement && currentElement.children) {
             
-            handleChildren(_currentElement, _prevElement, identifier);
+            handleChildren(currentElement, prevElement, identifier);
         }
     };
 
@@ -67,7 +63,33 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, identifier) => {
         };
     }
 
-    internalParse(newDomRoot, prevDomRoot, identifier);
+    internalParse(newDomRoot, prevDomRoot, rootIdentifier);
     
     return operations;
 };
+
+
+var prepareForComparison = (vElement, rootIdentifier) => {
+
+    if (typeof vElement !== "object") {
+        throw new Error("the vElement has to be an instance of a VELEMENT!");
+    }
+
+    rootIdentifier = rootIdentifier || "1_1";
+
+    function iterate(element, identifier) {
+        element.identifier = identifier;
+
+        if (element.children && element.children.length) {
+            for (var i = 0; i < element.children.length; i++) {
+                
+
+                iterate(element.children[i], `${identifier}_${i+1}`);
+            };
+        }
+    }
+
+    iterate(vElement, rootIdentifier);
+};
+
+module.exports.prepareForComparison = prepareForComparison;
