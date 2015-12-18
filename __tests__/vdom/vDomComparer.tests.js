@@ -20,6 +20,21 @@ describe('vDomComparer tests', function() {
             assert.equal(elementToPrepare.children[0].identifier, "1_1_1");
             assert.equal(elementToPrepare.children[1].identifier, "1_1_2");
         });
+
+        it('it should decorate a componentInstance with an identifier', function() {
+            
+            var component = Component({
+                view: function() { return new VElement("span"); }
+            });
+
+            var elementToPrepare = new VElement("div", null, new VElement(component));
+
+            vDomComparer.prepareForComparison(elementToPrepare, "1_1");
+
+            assert.equal(elementToPrepare.identifier, "1_1");
+            assert.equal(elementToPrepare.children[0].componentInstance.identifier, "1_1_1");
+            assert.equal(elementToPrepare.children[0].identifier, "1_1_1");
+        });
     });
 
     describe('comparison tests', function() {

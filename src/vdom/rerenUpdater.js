@@ -7,10 +7,10 @@ var _prevDom = null;
 var componentToUpdate = [];
 
 module.exports.init = (rootComponent, rootNode) => {
-	_rootComponent = rootComponent;
-	rootNode.setAttribute(variables.ID_ATTR, variables.ROOT_IDENTIFIER);
+    _rootComponent = rootComponent;
+    rootNode.setAttribute(variables.ID_ATTR, variables.ROOT_IDENTIFIER);
     
-	var vDom = rootComponent;
+    var vDom = rootComponent;
 
     var operations = vDomComparer.getChanges(vDom, _prevDom, variables.ROOT_IDENTIFIER + "_1");
 
@@ -24,50 +24,50 @@ module.exports.init = (rootComponent, rootNode) => {
 }
 
 module.exports.update = (component) => {
-	if (!_rootComponent) {
-		throw new Error("trying to update a Component without knowing what the root Component is!");
-	}
+    if (!_rootComponent) {
+        throw new Error("trying to update a Component without knowing what the root Component is!");
+    }
 
-	componentToUpdate.push(component);
-	setTimeout(scheduleUpdate);
+    componentToUpdate.push(component);
+    setTimeout(scheduleUpdate);
 }
 
 var scheduleUpdate = () => {
-	componentToUpdate.forEach(changedComponent => {
-		componentToUpdate.slice(changedComponent);
-		
-		var prevDom = findvDomElementByIdentifier(_prevDom, changedComponent.identifier);
-		var newDom = changedComponent.getView();
+    componentToUpdate.forEach(changedComponent => {
+        componentToUpdate.slice(changedComponent);
+        
+        var prevDom = findvDomElementByIdentifier(_prevDom, changedComponent.identifier);
+        var newDom = changedComponent.getView();
 
-		//var parentId = changedComponent.;
+        //var parentId = changedComponent.;
 
-		var operations = vDomComparer.getChanges(newDom, prevDom, changedComponent.identifier);
-		operations.forEach(o => {
-        	o.apply();
-    	});
-	})
+        var operations = vDomComparer.getChanges(newDom, prevDom, changedComponent.identifier);
+        operations.forEach(o => {
+            o.apply();
+        });
+    })
 };
 
 var findvDomElementByIdentifier = (vdom, identifier) => {
-	
-	var result = null;
-	
-	function find(e, identifier) {
-		if(e.componentInstance && e.componentInstance.identifier === identifier) {
-			result = e.componentInstance.getView();
-			return;
-		}
+    
+    var result = null;
+    
+    function find(e, identifier) {
+        if(e.componentInstance && e.componentInstance.identifier === identifier) {
+            result = e.componentInstance.getView();
+            return;
+        }
 
-		if(e.children) {
-			e.children.forEach(c => {
-				find(c, identifier);
-			})
-		}		
-	}
-	
-	find(vdom, identifier);
-	
-	return result;
+        if(e.children) {
+            e.children.forEach(c => {
+                find(c, identifier);
+            })
+        }        
+    }
+    
+    find(vdom, identifier);
+    
+    return result;
 }
 
 

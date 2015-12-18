@@ -79,6 +79,9 @@ var prepareForComparison = (vElement, rootIdentifier) => {
 
     function iterate(element, identifier) {
         element.identifier = identifier;
+        if (element.componentInstance) {
+            element.componentInstance.identifier = identifier;
+        }
 
         if (element.children && element.children.length) {
             for (var i = 0; i < element.children.length; i++) {
