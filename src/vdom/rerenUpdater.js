@@ -34,7 +34,7 @@ module.exports.update = (component) => {
 
 var scheduleUpdate = () => {
     componentToUpdate.forEach(changedComponent => {
-        componentToUpdate.slice(changedComponent);
+        componentToUpdate.splice(changedComponent);
         
         var prevDom = findvDomElementByIdentifier(_prevDom, changedComponent.identifier);
         var newDom = changedComponent.getView();
@@ -45,6 +45,7 @@ var scheduleUpdate = () => {
         operations.forEach(o => {
             o.apply();
         });
+        prevDom = newDom;
     })
 };
 
@@ -53,8 +54,8 @@ var findvDomElementByIdentifier = (vdom, identifier) => {
     var result = null;
     
     function find(e, identifier) {
-        if(e.componentInstance && e.componentInstance.identifier === identifier) {
-            result = e.componentInstance.getView();
+        if(e.identifier === identifier) {
+            result = e;
             return;
         }
 
