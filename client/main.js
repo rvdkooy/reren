@@ -8,7 +8,7 @@
                 this.timer = 0;
                 this.resetTimer = function() {
                     self.timer = 0;
-                    //t.update();
+                    t.update();
                 }
             };
 
@@ -53,6 +53,7 @@
                 },
                 this.onClearDataButtonClicked = function() {
                     self.data = [];
+                    t.update();
                 }
             };
 
@@ -76,7 +77,7 @@
                             R.div({ classes: "panel-footer" }, [ 
                                 R.button({ type: "button", classes: "btn btn-xs btn-primary", onClick: model.onLoadDataButtonClicked }, "Load Data"),
                                 R.button({ type: "button", classes: "btn btn-xs btn-default", onClick: model.onClearDataButtonClicked }, "Clear Data"),
-                                R.span({ classes: "label label-success" }, "number of rows in data: " + model.data.length)
+                                R.span({ classes: "label label-success pull-right" }, "number of rows in data: " + model.data.length)
                             ])
                         ])
                     ])
@@ -86,13 +87,14 @@
     
     var ListItem = R.component({
         controller: function() {
-
+            var t = this;
             var Model = function() {
                 var self = this;
                 this.counter = 1;
-                this.text = "item ";
+                this.text = "click me to increase the number ";
                 this.onClick = function() {
                     self.counter++;
+                    t.update();
                 }    
             }
 
@@ -116,7 +118,7 @@
             return R.div({ classes: "row" }, [ 
                 R.div({ classes: "col-lg-12" }, [ 
                     R.div({ classes: "panel panel-default" }, [
-                        R.div({ classes: "panel-heading" }, "Table example"),
+                        R.div({ classes: "panel-heading" }, "List of components example"),
                         R.div({ classes: "panel-body" , style: "height: 150px;overflow-y: auto"}, [
                             R.ul(null, listItems)
                         ])
@@ -143,8 +145,32 @@
     //  });
 
     // var RootComponent = R.component({
-    //     view: function() {
-    //         return R.div(null, R.element(ChildComponent))
+    //     controller: function() {
+    //         var t = this;
+
+    //         var ViewModel = function() {
+    //             // var self = this;
+    //             this.value = true;
+    //             // this.onClick = function() {
+    //             //     self.value = !self.value;
+    //             //     t.update();
+    //             // }
+    //         };
+
+    //         var model = new ViewModel();
+    //         this.interval = setInterval(() => {
+    //             model.value = !model.value;
+    //             t.update();
+    //         }, 1000);
+    //         this.setViewModel(model);
+    //         this.unMount = function() {
+    //             clearInterval(t.interval);
+    //         }
+
+    //     },
+
+    //     view: function(model) {
+    //         return R.div(null, model.value.toString())
     //     }
     // });
 

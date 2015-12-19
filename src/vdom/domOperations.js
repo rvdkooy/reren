@@ -12,7 +12,7 @@ var documentHelpers = require('./documentHelpers')
  */
 class InsertElement {
 
-    constructor(parentId, identifier, tagName, attributes, children) {
+    constructor(parentId, identifier, tagName, attributes, children, unMount) {
         if(!parentId) {
             throw new Error("For inserting we need a parentId");  
         } 
@@ -24,6 +24,7 @@ class InsertElement {
         this.tagName = tagName;
         this.attributes = attributes || {};
         this.children = [];
+        this.unMount = unMount;
 
         if (typeof children === "object") {
             this.children.push(children);
@@ -48,6 +49,11 @@ class InsertElement {
             }
             else if(prop === "onClick") {
                 element.addEventListener("click", this.attributes[prop]);
+
+                // setTimeout(() => {
+                //     element.removeEventListener("click", this.attributes[prop])
+                //     console.log("removed event listener");
+                // }, 2000);
             }
             else {
                 element.setAttribute(prop, this.attributes[prop]);
