@@ -9,14 +9,12 @@ var R = require('reren');
 
 var MyComponent = R.component({
   controller: () => {
-    var model = { timer: 0 };
+    this.model.timer = 0;
     
     setInterval(() => {
       model.timer += 1;
-      R.reRender();
+      this.update();
     }, 1000);
-    
-    this.setViewModel(model);
   },
   view: (model) => {
     return R.div({ classes: "container" }, [
@@ -37,9 +35,10 @@ R.start(MyComponent, document.getElementById("container"));
 
 ### Todo's
 - [ ] Reconize changes in attributes in vdom and apply them to the real dom
-- [ ] Only update components that really changed (instead of comparing the whole vdom)
+- [x] Only update components that really changed (instead of comparing the whole vdom)
 - [ ] Implement more events (instead of only onClick)
 - [ ] Communication between components (eg: props)
+- [ ] cleaning up components (unmounting them) and event handlers
 
 ### Idea's
 - [ ] Dependency injection (registering and injecting them into a controller)
