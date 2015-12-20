@@ -49,11 +49,6 @@ class InsertElement {
             }
             else if(prop === "onClick") {
                 element.addEventListener("click", this.attributes[prop]);
-
-                // setTimeout(() => {
-                //     element.removeEventListener("click", this.attributes[prop])
-                //     console.log("removed event listener");
-                // }, 2000);
             }
             else {
                 element.setAttribute(prop, this.attributes[prop]);
