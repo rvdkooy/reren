@@ -6,17 +6,21 @@
             var ViewModel = function() {
                 var self = this;
                 this.timer = 0;
-                this.resetTimer = function() {
+                this.stopTimer = function() {
                     self.timer = 0;
+                    clearInterval(self.interval);
                     t.update();
+                },
+                this.startTimer = function() {
+                    self.interval = setInterval(() => {
+                        self.timer += 1;
+                        t.update();
+                    }, 1000);
                 }
             };
 
             var model = new ViewModel();
-            setInterval(() => {
-                model.timer += 1;
-                t.update();
-            }, 1000);
+            
             this.setViewModel(model);
         },
         view: function(model) {
@@ -28,7 +32,8 @@
                                 R.h3(null, model.timer.toString())
                             ]),
                             R.div({ classes: "panel-footer" }, [ 
-                                R.button({ type: "button", classes: "btn btn-xs btn-primary", onClick: model.resetTimer }, "Reset timer")
+                                R.button({ type: "button", classes: "btn btn-xs btn-primary", onClick: model.startTimer }, "Start timer"),
+                                R.button({ type: "button", classes: "btn btn-xs", onClick: model.stopTimer }, "Stop timer")
                             ])
                         ]),
                         
@@ -91,7 +96,7 @@
             var Model = function() {
                 var self = this;
                 this.counter = 1;
-                this.text = "click me to increase the number ";
+                this.text = "Every line is a separate component, click me to increase the number ";
                 this.onClick = function() {
                     self.counter++;
                     t.update();
