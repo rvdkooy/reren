@@ -1,8 +1,5 @@
-var vElement = require('./vElement');
-var domUtils = require('./domUtils');
-var _prevDom = null;
-var _rootNode;
-var _rootComponent;
+var vElement = require('./vdom/vElement');
+var rerenUpdater = require('./vdom/rerenUpdater');
 
 /**
  * Api method for creating a Reren controller
@@ -25,33 +22,7 @@ module.exports.element = vElement;
  * @rootNode         {The root DOM node the render all content on}
  */
 module.exports.start = (rootComponent, rootNode) => {
-    _rootComponent = rootComponent;
-    _rootNode = rootNode || document.body;
-
-    var vDom = _rootComponent.getView();
-    
-    applyChanges(vDom);
-
-    _prevDom = vDom;
-};
-
-/**
- * Api method for rerendering the whole App
- */
-module.exports.reRender = () => {
-    var newDom = _rootComponent.getView();
-    
-    applyChanges(newDom);
-
-    _prevDom = newDom;
-};
-
-var applyChanges = (vDom) => {
-    var operations = domUtils.getChanges(vDom, _prevDom, _rootNode);
-
-    operations.forEach(o => {
-        o.apply();
-    });
+    rerenUpdater.init(rootComponent, rootNode);
 };
 
 /**

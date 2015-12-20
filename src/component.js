@@ -1,74 +1,94 @@
+var rerenUpdater = require('./vdom/rerenUpdater');
+
+
 /**
  * Base class for a Reren controller
  * every controller will be extended by this BaseController
  * so that it will have functions like "setViewModel()" and "update()"
  */
 class BaseController {
-	constructor(reRender) {
-		this._reRender = reRender;
-	}
+    constructor(update) {
+        this.update = update;
+    }
 
-	setViewModel(model) {
+    setViewModel(model) {
         if (!model) {
-        	throw new Error("view model should be defined!");
+            throw new Error("view model should be defined!");
         }
 
         this._model = model;
     };
-    
-    getViewModel() {
-    	return this._model;
-    }
+    update;
 
-    // experimental...
-    update() {
-    	this._reRender();
+    getViewModel() {
+        return this._model;
     }
 };
 
 /**
  * Reren component that can be rendered in the DOM and that will have it's
  * own lifecycle
- * @param {Controller} 			[The Controller of the component, required]
- * @param {View}       			[The View of the component that is responsible for returning virtual elements, required]
+ * @param {Controller}             [The Controller of the component, required]
+ * @param {View}                   [The View of the component that is responsible for returning virtual elements, required]
  */
-class Component {
-	
-	constructor(Controller, view) {
-		if (!view) {
-			throw new Error("A component should always have a view!");
-		}
+var Component = function(definition) {
+    
+    function ComponentConstructor() {
+        var self = this;
+        
+        function init() {
+            
+            if (!self.view) {
+                throw new Error("A component should always have a view!");
+            }
+            
+            if (self.controller) {
+                var updater = () => { rerenUpdater.update(self); }
+                self.controller.prototype = new BaseController(updater);
+                self.controller.constructor = self.controller;
+                var ctrl = new self.controller();
+                self._controllerInstance = ctrl;
+            }
+        } 
+        init();
 
-		if (Controller) {
-			Controller.prototype = new BaseController();
-			Controller.constructor = Controller;
-			var ctrl = new Controller();
+        this.unMount = () => {
+            if (self._controllerInstance) {
+                if(self._controllerInstance.unMount) {
+                    self._controllerInstance.unMount();
+                }
+                
+                self._controllerInstance = null;
 
-			this._controller = ctrl;	
-		}
-		
-		this._view = view;
-	}
+            }
+            if(self.view) {
+                self.view = null;
+            }
+        }
 
-    getView() {
-    	var viewModel = null;
-    	if(this._controller) {
-    		viewModel = this._controller.getViewModel();
-    	}
-        var rootvElement = this._view(viewModel);
-        rootvElement.componentInstance = this;
-        return rootvElement;
-    };
+        this.getView = () => {
+            var viewModel = null;
+            
+            if(this._controllerInstance) {
+                viewModel = this._controllerInstance.getViewModel();
+            }
+            
+            return this.view(viewModel);
+        };
+    }
+
+    ComponentConstructor.prototype = definition;
+    ComponentConstructor.constructor = ComponentConstructor;
+    return ComponentConstructor;
 };
 
 /**
  * Factory method for creating a Reren component
- * @param  {object} 		[The component definition (controller and view)]
+ * @param  {object}         [The component definition (controller and view)]
  * @return {Component}      [The Reren component]
  */
 module.exports = (definition) => {
-	return new Component(definition.controller, definition.view);
+    return Component(definition);
 };
 
 module.exports.Component = Component;
-
