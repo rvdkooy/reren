@@ -1,8 +1,8 @@
-var VElement = require('../../src/vdom/vElement.js');
-var vDomComparer = require('../../src/vdom/vDomComparer');
+var VElement = require('../src/vdom/vElement.js');
+var vDomComparer = require('../src/vdom/vDomComparer');
 var assert = require('assert');
-var { Component } = require('../../src/component.js');
-var { InsertElement, SetInnerHtml, SetAttribute, RemoveElement } = require('../../src/vdom/domOperations');
+var { Component } = require('../src/component.js');
+var { InsertElement, SetInnerHtml, SetAttribute, RemoveElement } = require('../src/vdom/domOperations');
 
 describe('vDomComparer tests', function() {
 

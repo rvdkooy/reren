@@ -9,20 +9,10 @@ var rerenUpdater = require('./vdom/rerenUpdater');
 class BaseController {
     constructor(update) {
         this.update = update;
+        this.model = {};
     }
 
-    setViewModel(model) {
-        if (!model) {
-            throw new Error("view model should be defined!");
-        }
-
-        this._model = model;
-    };
     update;
-
-    getViewModel() {
-        return this._model;
-    }
 };
 
 /**
@@ -34,49 +24,47 @@ class BaseController {
 var Component = function(definition) {
     
     function ComponentConstructor() {
-        var self = this;
         
-        function init() {
-            
-            if (!self.view) {
+        var init = () => {
+            if (!this.view) {
                 throw new Error("A component should always have a view!");
             }
             
-            if (self.controller) {
-                var updater = () => { rerenUpdater.update(self); }
-                self.controller.prototype = new BaseController(updater);
-                self.controller.constructor = self.controller;
-                var ctrl = new self.controller();
-                self._controllerInstance = ctrl;
+            if (this.controller) {
+                var updater = () => { rerenUpdater.update(this); }
+                this.controller.prototype = new BaseController(updater);
+                this.controller.constructor = this.controller;
+                var ctrl = new this.controller();
+                this._controllerInstance = ctrl;
             }
         } 
         init();
 
         this.unMount = () => {
-            if (self._controllerInstance) {
-                if(self._controllerInstance.unMount) {
-                    self._controllerInstance.unMount();
+            if (this._controllerInstance) {
+                if(this._controllerInstance.unMount) {
+                    this._controllerInstance.unMount();
                 }
                 
-                self._controllerInstance = null;
+                this._controllerInstance = null;
 
             }
-            if(self.view) {
-                self.view = null;
+            if(this.view) {
+                this.view = null;
             }
         }
 
         this.getView = () => {
-            var viewModel = null;
-            
+            var model = null;
+            console.log(this._controllerInstance);
             if(this._controllerInstance) {
-                viewModel = this._controllerInstance.getViewModel();
+                
+                model = this._controllerInstance.model;
             }
             
-            return this.view(viewModel);
+            return this.view(model);
         };
     }
-
     ComponentConstructor.prototype = definition;
     ComponentConstructor.constructor = ComponentConstructor;
     return ComponentConstructor;

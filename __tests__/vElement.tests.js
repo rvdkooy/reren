@@ -1,6 +1,6 @@
-var VElement = require('../../src/vdom/vElement.js');
+var VElement = require('../src/vdom/vElement.js');
 var assert = require('assert');
-var { Component } = require('../../src/component.js');
+var { Component } = require('../src/component.js');
 
 describe('vElement tests', function() {
   

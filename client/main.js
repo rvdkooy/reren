@@ -2,26 +2,20 @@
     
     var CounterComponent = R.component({
         controller: function() {
-            var t = this;
-            var ViewModel = function() {
-                var self = this;
-                this.timer = 0;
-                this.stopTimer = function() {
-                    self.timer = 0;
-                    clearInterval(self.interval);
-                    t.update();
-                },
-                this.startTimer = function() {
-                    self.interval = setInterval(() => {
-                        self.timer += 1;
-                        t.update();
-                    }, 1000);
-                }
-            };
-
-            var model = new ViewModel();
+            var self = this;
             
-            this.setViewModel(model);
+            this.model.timer = 0;
+            this.model.stopTimer = function() {
+                self.model.timer = 0;
+                clearInterval(self.interval);
+                self.update();
+            };
+            this.model.startTimer = function() {
+                self.interval = setInterval(() => {
+                    self.model.timer += 1;
+                    self.update();
+                }, 1000);
+            };
         },
         view: function(model) {
             var backgroundColor = "red";
@@ -50,24 +44,19 @@
 
     var TableComponent = R.component({
         controller: function() {
-            var t = this;
-            var ViewModel = function() {
-                var self = this;
-                this.data = [];
-                this.onLoadDataButtonClicked = function() {
-                    
-                    for (var i = 0; i < 250; i++) {
-                        self.data.push({ name: "Ronald van der Kooij " + (i+1) });
-                    };
-                    t.update();
-                },
-                this.onClearDataButtonClicked = function() {
-                    self.data = [];
-                    t.update();
-                }
-            };
-
-            this.setViewModel(new ViewModel());
+            var self = this;
+            this.model.data = [];
+            this.model.onLoadDataButtonClicked = function() {
+                
+                for (var i = 0; i < 250; i++) {
+                    self.model.data.push({ name: "Ronald van der Kooij " + (i+1) });
+                };
+                self.update();
+            },
+            this.model.onClearDataButtonClicked = function() {
+                self.model.data = [];
+                self.update();
+            }
         },
         view: function(model) {
             var rows = model.data.map((d) => {
@@ -97,18 +86,13 @@
     
     var ListItem = R.component({
         controller: function() {
-            var t = this;
-            var Model = function() {
-                var self = this;
-                this.counter = 1;
-                this.text = "Every line is a separate component, click me to increase the number ";
-                this.onClick = function() {
-                    self.counter++;
-                    t.update();
-                }    
-            }
-
-            this.setViewModel(new Model());
+            var self = this;
+            this.model.counter = 1;
+            this.model.text = "Every line is a separate component, click me to increase the number ";
+            this.model.onClick = function() {
+                self.model.counter++;
+                self.update();
+            }    
         },
         view: function(model) {
             return R.li({ onClick: model.onClick }, model.text + model.counter.toString())
