@@ -2,7 +2,7 @@ var VElement = require('../../src/vdom/vElement.js');
 var vDomComparer = require('../../src/vdom/vDomComparer');
 var assert = require('assert');
 var { Component } = require('../../src/component.js');
-var { InsertElement, SetInnerHtml } = require('../../src/vdom/domOperations');
+var { InsertElement, SetInnerHtml, SetAttribute } = require('../../src/vdom/domOperations');
 
 describe('vDomComparer tests', function() {
 
@@ -59,10 +59,35 @@ describe('vDomComparer tests', function() {
               var operations = vDomComparer.getChanges(currentElement, prevElement, "1_1");
               
               assert.equal(operations.length, 1);
-              console.log(operations[0]);
               assert.equal(operations[0] instanceof SetInnerHtml, true);
               assert.equal(operations[0].identifier, "1_1");
               assert.equal(operations[0].innerHtml, "some text changed");
+        });
+
+        it('it should return a set attribute operation when the previous vElement did not have any attributes', function () {
+              var currentElement = new VElement("div", { classes: "mynewclass" });
+              var prevElement = new VElement("div", null);
+              
+              var operations = vDomComparer.getChanges(currentElement, prevElement, "1_1");
+              
+              assert.equal(operations.length, 1);
+              assert.equal(operations[0] instanceof SetAttribute, true);
+              assert.equal(operations[0].identifier, "1_1");
+              assert.equal(operations[0].attributeName, "class");
+              assert.equal(operations[0].attributeValue, "mynewclass");
+        });
+
+        it('it should return a set attribute operation when the previous vElement attributes changed', function () {
+              var currentElement = new VElement("div", { style: "newstyles" });
+              var prevElement = new VElement("div", { style: "mystyles" });
+              
+              var operations = vDomComparer.getChanges(currentElement, prevElement, "1_1");
+              
+              assert.equal(operations.length, 1);
+              assert.equal(operations[0] instanceof SetAttribute, true);
+              assert.equal(operations[0].identifier, "1_1");
+              assert.equal(operations[0].attributeName, "style");
+              assert.equal(operations[0].attributeValue, "newstyles");
         });
     });
 });

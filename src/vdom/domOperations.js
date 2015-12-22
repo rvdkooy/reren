@@ -100,9 +100,23 @@ class RemoveElement {
     }
 }
 
+class SetAttribute {
+    constructor(identifier, attributeName, attributeValue) {
+        this.identifier = identifier;
+        this.attributeName = attributeName;
+        this.attributeValue = attributeValue;
+    }
+
+    apply() {
+        var elementToChange = documentHelpers.findElement(this.identifier);
+        elementToChange.setAttribute(this.attributeName, this.attributeValue);
+    }
+}
+
 /**
  * Exports
  */
 module.exports.InsertElement = InsertElement;
 module.exports.SetInnerHtml = SetInnerHtml;
 module.exports.RemoveElement = RemoveElement;
+module.exports.SetAttribute = SetAttribute;

@@ -24,12 +24,17 @@
             this.setViewModel(model);
         },
         view: function(model) {
+            var backgroundColor = "red";
+            if(model.timer % 2 === 0) {
+                backgroundColor = "green";
+            }
+
             return R.div({ classes: "row" }, [ 
                     R.div({ classes: "col-lg-12" }, [ 
                         R.div({ classes: "panel panel-default" }, [
                             R.div({ classes: "panel-heading" }, "Counter example"),
                             R.div({ classes: "panel-body" }, [
-                                R.h3(null, model.timer.toString())
+                                R.h3({ style: "color: " + backgroundColor + "" }, model.timer.toString())
                             ]),
                             R.div({ classes: "panel-footer" }, [ 
                                 R.button({ type: "button", classes: "btn btn-xs btn-primary", onClick: model.startTimer }, "Start timer"),

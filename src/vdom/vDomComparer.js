@@ -2,7 +2,7 @@ var VElement = require('./vElement');
 var variables = require('../variables');
 var { Component } = require('../component');
 
-var { InsertElement, SetInnerHtml, RemoveElement } = require('./domOperations');
+var { InsertElement, SetInnerHtml, RemoveElement, SetAttribute } = require('./domOperations');
 
 module.exports.getChanges = (newDomRoot, prevDomRoot, rootIdentifier) => {
     
@@ -31,10 +31,25 @@ module.exports.getChanges = (newDomRoot, prevDomRoot, rootIdentifier) => {
                 // if the current element is not there anymore we should remove it
                 operations.push(new RemoveElement(parentIdentifier, identifier));
 
-            } else if (prevElement.content && (currentElement.content !== prevElement.content)) {
+            } else {
                 
-                // if the inner content has changed we update it: eg: string
-                operations.push(new SetInnerHtml(identifier, currentElement.content));
+                if (prevElement.content && (currentElement.content !== prevElement.content)) {
+                    
+                    // if the inner content has changed we update it: eg: string
+                    operations.push(new SetInnerHtml(identifier, currentElement.content));
+                }
+
+                if(currentElement.attributes) {
+                    for (var attr in currentElement.attributes) {
+                        
+                        if (!prevElement.attributes || prevElement.attributes[attr] !== currentElement.attributes[attr]) {
+                            var attrName = attr;
+                            if (attr === "classes") attrName = "class";
+                            operations.push(new SetAttribute(currentElement.identifier, attrName, 
+                                                    currentElement.attributes[attr]));
+                        }
+                    };
+                }
             }
         }
 
