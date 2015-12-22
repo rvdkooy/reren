@@ -7,7 +7,7 @@ class VElement {
         this.content = null;
         this.children = null;
         this.componentInstance = null;
-        //console.log(typeof tagName);
+        
         if(typeof tagName === "function") {
             
             var componentInstance = new tagName();
@@ -17,6 +17,7 @@ class VElement {
             return vElement;
 
         } else {
+            
             if (typeof children === "object") {
                 
                 if (Array.isArray(children)){
@@ -27,9 +28,11 @@ class VElement {
                 } else {
                     this.children = [ children ];    
                 }
-            } else {
+            } else if (children) {
                 this.content = children;
-            }    
+            } else {
+                this.children = [];
+            }
         }
     }
 }

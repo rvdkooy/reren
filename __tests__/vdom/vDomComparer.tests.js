@@ -2,7 +2,7 @@ var VElement = require('../../src/vdom/vElement.js');
 var vDomComparer = require('../../src/vdom/vDomComparer');
 var assert = require('assert');
 var { Component } = require('../../src/component.js');
-var { InsertElement, SetInnerHtml, SetAttribute } = require('../../src/vdom/domOperations');
+var { InsertElement, SetInnerHtml, SetAttribute, RemoveElement } = require('../../src/vdom/domOperations');
 
 describe('vDomComparer tests', function() {
 
@@ -88,6 +88,18 @@ describe('vDomComparer tests', function() {
               assert.equal(operations[0].identifier, "1_1");
               assert.equal(operations[0].attributeName, "style");
               assert.equal(operations[0].attributeValue, "newstyles");
+        });
+
+        it('it should return a remove element operation when the previous vElement does not exist anymore', function () {
+              var currentElement = new VElement("div");
+              var prevElement = new VElement("div", null, new VElement("span"));
+              
+              var operations = vDomComparer.getChanges(currentElement, prevElement, "1_1");
+              
+              assert.equal(operations.length, 1);
+              assert.equal(operations[0] instanceof RemoveElement, true);
+              assert.equal(operations[0].identifier, "1_1_1");
+              assert.equal(operations[0].parentId, "1_1");
         });
     });
 });
