@@ -35,6 +35,7 @@ R.start(MyComponent, document.getElementById("container"));
 
 ### Todo's
 - [ ] Reconize changes in attributes in vdom and apply them to the real dom
+- [ ] Implement changes in lists by using a unique key (like react)
 - [x] Only update components that really changed (instead of comparing the whole vdom)
 - [ ] Implement more events (instead of only onClick)
 - [ ] Communication between components (eg: props)
