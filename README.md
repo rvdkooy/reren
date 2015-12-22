@@ -8,7 +8,7 @@ Example/Idea:
 var R = require('reren');
 
 var MyComponent = R.component({
-  controller: () => {
+  controller: function() {
     this.model.timer = 0;
     
     setInterval(() => {
@@ -16,7 +16,7 @@ var MyComponent = R.component({
       this.update();
     }, 1000);
   },
-  view: (model) => {
+  view: function(model) {
     return R.div({ classes: "container" }, [
       R.div({ classes: "row" }, model.timer.toString());
     ]);

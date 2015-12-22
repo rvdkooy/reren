@@ -56,7 +56,7 @@ var Component = function(definition) {
 
         this.getView = () => {
             var model = null;
-            console.log(this._controllerInstance);
+
             if(this._controllerInstance) {
                 
                 model = this._controllerInstance.model;

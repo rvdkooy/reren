@@ -2,13 +2,13 @@ var vElement = require('./vdom/vElement');
 var rerenUpdater = require('./vdom/rerenUpdater');
 
 /**
- * Api method for creating a Reren controller
- * @type {The controller function}
+ * Api method for creating a Reren component
+ * @type {The component factory method}
  */
 module.exports.component = require('./component');
 
 /**
- * Api method for creating Reren a Reren element
+ * Api method for creating a Reren element
  * @tag             {The tagname of the element. eg: div}
  * @attributes         {The attributes to put on the element. eg: style: { color: "red" }}
  * @children         {The children of the element. 
