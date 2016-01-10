@@ -6,12 +6,13 @@ var componentToUpdate = [];
 
 module.exports.init = (rootComponent, rootNode) => {
     rootNode.setAttribute(variables.ID_ATTR, variables.ROOT_IDENTIFIER);
-    var vDom = rootComponent;
+    
+    //var operations = vDomComparer.getChanges(vDom, _currentVirtualDom, variables.ROOT_IDENTIFIER + "_1");
+    //operations.forEach(o => o.apply());
+    
+    var rootInstance = new rootComponent.type();
 
-    var operations = vDomComparer.getChanges(vDom, _currentVirtualDom, variables.ROOT_IDENTIFIER + "_1");
-    operations.forEach(o => o.apply());
-
-    _currentVirtualDom = vDom;
+    rootInstance.mount(variables.ROOT_IDENTIFIER);
 }
 
 module.exports.update = (component) => {

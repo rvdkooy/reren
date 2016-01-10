@@ -1,5 +1,7 @@
 var rerenUpdater = require('./vdom/rerenUpdater');
+var DomComponent = require('./vdom/components/domComponent');
 
+var variables = require('./variables');
 
 /**
  * Base class for a Reren controller
@@ -25,34 +27,21 @@ var Component = function(definition) {
     
     function ComponentConstructor() {
         
+
+
+
         var init = () => {
             if (!this.view) {
                 throw new Error("A component should always have a view!");
             }
             
             if (this.controller) {
-                var updater = () => { rerenUpdater.update(this); }
-                this.controller.prototype = new BaseController(updater);
+                this.controller.prototype = new BaseController(this.updateComponent);
                 this.controller.constructor = this.controller;
                 var ctrl = new this.controller();
                 this._controllerInstance = ctrl;
             }
         } 
-        init();
-
-        this.unMount = () => {
-            if (this._controllerInstance) {
-                if(this._controllerInstance.unMount) {
-                    this._controllerInstance.unMount();
-                }
-                
-                this._controllerInstance = null;
-
-            }
-            if(this.view) {
-                this.view = null;
-            }
-        }
 
         this.getView = () => {
             var model = null;
@@ -64,11 +53,67 @@ var Component = function(definition) {
             
             return this.view(model);
         };
+        
+        this.previousMountedDom = {};
+
+        this.mount = (mountPointId) => {
+            this.indentifier = mountPointId;
+            var componentInstanceTree = this._parseElement(this.getView(), 
+                                                            mountPointId, 
+                                                            mountPointId + "_1",
+                                                            this.previousMountedDom);
+            this.previousMountedDom = componentInstanceTree;
+        };
+
+        this.updateComponent = () => {
+            
+            var newComponentInstanceTree = this._parseElement(this.getView(), 
+                                                            this.indentifier, 
+                                                            this.indentifier + "_1",
+                                                            this.previousMountedDom);
+
+            this.previousMountedDom = newComponentInstanceTree;
+        };
+
+        this._parseElement = (element, mountId, identifier, previousComponentInstance) => {
+            // check component instance against previous mounted dom
+            
+            var domComponentInstance = null;
+            if (!previousComponentInstance || previousComponentInstance.tagName !== element.type) {
+                domComponentInstance = new DomComponent(element, mountId, identifier);
+                domComponentInstance.mount();
+            } else {
+                domComponentInstance = previousComponentInstance;
+
+                if (element.content !== domComponentInstance.content) {
+                    domComponentInstance.update(element);
+                }
+            }
+
+            if(element.children && element.children.length) {
+
+                element.children.forEach((child, index) => {
+                    var xchild = domComponentInstance.children[index];
+                    var childComponent = this._parseElement(child, 
+                                                            identifier, 
+                                                            identifier + "_" + (index + 1),
+                                                            xchild);
+                    
+                    domComponentInstance.addChild(childComponent);
+                })
+            }
+
+            return domComponentInstance;
+        }
+
+        init();
     }
     ComponentConstructor.prototype = definition;
     ComponentConstructor.constructor = ComponentConstructor;
     return ComponentConstructor;
 };
+
+
 
 /**
  * Factory method for creating a Reren component
