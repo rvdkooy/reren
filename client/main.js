@@ -1,45 +1,45 @@
 (function(R){
     
-    // var CounterComponent = R.component({
-    //     controller: function() {
-    //         var self = this;
+    var CounterComponent = R.component({
+        controller: function() {
+            var self = this;
             
-    //         this.model.timer = 0;
-    //         this.model.stopTimer = function() {
-    //             self.model.timer = 0;
-    //             clearInterval(self.interval);
-    //             self.update();
-    //         };
-    //         this.model.startTimer = function() {
-    //             self.interval = setInterval(() => {
-    //                 self.model.timer += 1;
-    //                 self.update();
-    //             }, 1000);
-    //         };
-    //     },
-    //     view: function(model) {
-    //         var backgroundColor = "red";
-    //         if(model.timer % 2 === 0) {
-    //             backgroundColor = "green";
-    //         }
+            this.model.timer = 0;
+            this.model.stopTimer = function() {
+                self.model.timer = 0;
+                clearInterval(self.interval);
+                self.update();
+            };
+            this.model.startTimer = function() {
+                self.interval = setInterval(() => {
+                    self.model.timer += 1;
+                    self.update();
+                }, 1000);
+            };
+        },
+        view: function(model) {
+            var backgroundColor = "red";
+            if(model.timer % 2 === 0) {
+                backgroundColor = "green";
+            }
 
-    //         return R.div({ classes: "row" }, [ 
-    //                 R.div({ classes: "col-lg-12" }, [ 
-    //                     R.div({ classes: "panel panel-default" }, [
-    //                         R.div({ classes: "panel-heading" }, "Counter example"),
-    //                         R.div({ classes: "panel-body" }, [
-    //                             R.h3({ style: "color: " + backgroundColor + "" }, model.timer.toString())
-    //                         ]),
-    //                         R.div({ classes: "panel-footer" }, [ 
-    //                             R.button({ type: "button", classes: "btn btn-xs btn-primary", onClick: model.startTimer }, "Start timer"),
-    //                             R.button({ type: "button", classes: "btn btn-xs", onClick: model.stopTimer }, "Stop timer")
-    //                         ])
-    //                     ]),
+            return R.div({ classes: "row" }, [ 
+                    R.div({ classes: "col-lg-12" }, [ 
+                        R.div({ classes: "panel panel-default" }, [
+                            R.div({ classes: "panel-heading" }, "Counter example"),
+                            R.div({ classes: "panel-body" }, [
+                                R.h3({ style: "color: " + backgroundColor + "" }, model.timer.toString())
+                            ]),
+                            R.div({ classes: "panel-footer" }, [ 
+                                R.button({ type: "button", classes: "btn btn-xs btn-primary", onClick: model.startTimer }, "Start timer"),
+                                R.button({ type: "button", classes: "btn btn-xs", onClick: model.stopTimer }, "Stop timer")
+                            ])
+                        ]),
                         
-    //                 ])
-    //             ]);  
-    //     }
-    // });
+                    ])
+                ]);  
+        }
+    });
 
 
     // var TableComponent = R.component({
@@ -149,6 +149,6 @@
         }
     })
 
-    R.start(R.element(SimpleComponent), document.getElementById('container'));
+    R.start(R.element(CounterComponent), document.getElementById('container'));
 
 })(window.Reren);
