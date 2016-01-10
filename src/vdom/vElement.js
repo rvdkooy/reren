@@ -1,5 +1,3 @@
-var { Component } = require('../component');
-
 class VElement {
     constructor(type, attr, children) {
         this.type = type;

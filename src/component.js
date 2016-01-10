@@ -25,7 +25,7 @@ class BaseController {
  */
 var Component = function(definition) {
     
-    function ComponentConstructor() {
+    function RerenComponent() {
 
         var init = () => {
             if (!this.view) {
@@ -54,7 +54,7 @@ var Component = function(definition) {
         this.previousMountedDom = {};
 
         this.mount = (identifier) => {
-            this.indentifier = identifier;
+            this.identifier = identifier;
             
             var parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"))
             
@@ -66,10 +66,10 @@ var Component = function(definition) {
         };
 
         this.updateComponent = () => {
-            
+            var parentIdentifier = this.identifier.substring(0, this.identifier.lastIndexOf("_"))
             var newComponentInstanceTree = this._parseElement(this.getView(), 
-                                                            this.indentifier, 
-                                                            this.indentifier + "_1",
+                                                            parentIdentifier, 
+                                                            this.identifier,
                                                             this.previousMountedDom);
 
             this.previousMountedDom = newComponentInstanceTree;
@@ -81,30 +81,39 @@ var Component = function(definition) {
             var componentInstance = null;
             
             if (typeof element.type === "string") {
+                
                 if (!previousComponentInstance || previousComponentInstance.tagName !== element.type) {
                     componentInstance = new DomComponent(element, mountId, identifier);
+                    // console.log("mounting new domcomponent");
                     componentInstance.mount();
+
                 } else {
                     componentInstance = previousComponentInstance;
-
-                    if (element.content !== componentInstance.content) {
-                        componentInstance.update(element);
-
-                    }
+                    // console.log("updating existing domcomponent");
+                    componentInstance.update(element);
                 }
             } else if (typeof element.type === "function") {
                 if (!previousComponentInstance) { // or changed !!
                     componentInstance = new element.type();
+                    // console.log("mounting new reren component");
                     componentInstance.mount(identifier);
                 } else {
-                    console.log("fsdsfs");
+                    console.log("not implemented yet");
                 }
             }
 
-            // handle children
-            if(element.children && element.children.length) {
+            // removing children
+            if ((element.children && element.children.length === 0) && (
+                componentInstance.children && componentInstance.children.length > 0)) {
+                
+                for (var i = 0; i < componentInstance.children.length; i++) {
+                    var childrenToRemove = componentInstance.children.splice(i);
+                    childrenToRemove.forEach(x => x.unmount());
+                };
+            }
 
-                // cleaing up children if needed!!!
+            // adding children
+            if(element.children && element.children.length) {
 
                 element.children.forEach((child, index) => {
                     var xchild = componentInstance.children[index];
@@ -112,7 +121,7 @@ var Component = function(definition) {
                                                             identifier, 
                                                             identifier + "_" + (index + 1),
                                                             xchild);
-                    
+
                     componentInstance.addChild(childComponent);
                 })
             }
@@ -122,9 +131,9 @@ var Component = function(definition) {
 
         init();
     }
-    ComponentConstructor.prototype = definition;
-    ComponentConstructor.constructor = ComponentConstructor;
-    return ComponentConstructor;
+    RerenComponent.prototype = definition;
+    RerenComponent.constructor = RerenComponent;
+    return RerenComponent;
 };
 
 

@@ -2,11 +2,11 @@ var variables = require('../../variables');
 var documentHelpers = require('../documentHelpers');
 
 class DomComponent {
-    constructor(vElement, mountId, identifier) {
+    constructor(vElement, parentIdentifier, identifier) {
         this.tagName = vElement.type;
         this.content = vElement.content;
         this.attributes = vElement.attributes;
-        this.mountId = mountId;
+        this.parentIdentifier = parentIdentifier;
         this.identifier = identifier;
         this.children = [];
     }
@@ -25,7 +25,7 @@ class DomComponent {
         }
     }
     mount() {
-        var mountElement = documentHelpers.findElement(this.mountId)
+        var mountElement = documentHelpers.findElement(this.parentIdentifier)
 
         var element = document.createElement(this.tagName);
         this._handleAttributes(this.attributes, element);
@@ -48,12 +48,15 @@ class DomComponent {
         this._handleAttributes(vElement.attributes, mountElement);
 
         if (vElement.content !== this.content) {
+            this.content = vElement.content;
             mountElement.innerHTML = vElement.content;
         }
     }
 
     unmount() {
-        // cleaning up + all children!
+        var elementToRemove = documentHelpers.findElement(this.identifier);
+        console.log("removing element: " + elementToRemove);
+        documentHelpers.findElement(this.parentIdentifier).removeChild(elementToRemove);
     }
 }
 
