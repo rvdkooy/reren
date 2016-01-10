@@ -26,9 +26,6 @@ class BaseController {
 var Component = function(definition) {
     
     function ComponentConstructor() {
-        
-
-
 
         var init = () => {
             if (!this.view) {
@@ -56,11 +53,14 @@ var Component = function(definition) {
         
         this.previousMountedDom = {};
 
-        this.mount = (mountPointId) => {
-            this.indentifier = mountPointId;
+        this.mount = (identifier) => {
+            this.indentifier = identifier;
+            
+            var parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"))
+            
             var componentInstanceTree = this._parseElement(this.getView(), 
-                                                            mountPointId, 
-                                                            mountPointId + "_1",
+                                                            parentIdentifier,
+                                                            identifier,
                                                             this.previousMountedDom);
             this.previousMountedDom = componentInstanceTree;
         };
@@ -78,32 +78,46 @@ var Component = function(definition) {
         this._parseElement = (element, mountId, identifier, previousComponentInstance) => {
             // check component instance against previous mounted dom
             
-            var domComponentInstance = null;
-            if (!previousComponentInstance || previousComponentInstance.tagName !== element.type) {
-                domComponentInstance = new DomComponent(element, mountId, identifier);
-                domComponentInstance.mount();
-            } else {
-                domComponentInstance = previousComponentInstance;
+            var componentInstance = null;
+            
+            if (typeof element.type === "string") {
+                if (!previousComponentInstance || previousComponentInstance.tagName !== element.type) {
+                    componentInstance = new DomComponent(element, mountId, identifier);
+                    componentInstance.mount();
+                } else {
+                    componentInstance = previousComponentInstance;
 
-                if (element.content !== domComponentInstance.content) {
-                    domComponentInstance.update(element);
+                    if (element.content !== componentInstance.content) {
+                        componentInstance.update(element);
+
+                    }
+                }
+            } else if (typeof element.type === "function") {
+                if (!previousComponentInstance) { // or changed !!
+                    componentInstance = new element.type();
+                    componentInstance.mount(identifier);
+                } else {
+                    console.log("fsdsfs");
                 }
             }
 
+            // handle children
             if(element.children && element.children.length) {
 
+                // cleaing up children if needed!!!
+
                 element.children.forEach((child, index) => {
-                    var xchild = domComponentInstance.children[index];
+                    var xchild = componentInstance.children[index];
                     var childComponent = this._parseElement(child, 
                                                             identifier, 
                                                             identifier + "_" + (index + 1),
                                                             xchild);
                     
-                    domComponentInstance.addChild(childComponent);
+                    componentInstance.addChild(childComponent);
                 })
             }
 
-            return domComponentInstance;
+            return componentInstance;
         }
 
         init();

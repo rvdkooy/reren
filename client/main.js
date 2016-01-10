@@ -84,53 +84,53 @@
     //     }
     // });
     
-    // var ListItem = R.component({
-    //     controller: function() {
-    //         var self = this;
-    //         this.model.counter = 1;
-    //         this.model.text = "Every line is a separate component, click me to increase the number ";
-    //         this.model.onClick = function() {
-    //             self.model.counter++;
-    //             self.update();
-    //         }    
-    //     },
-    //     view: function(model) {
-    //         return R.li({ onClick: model.onClick }, model.text + model.counter.toString())
-    //     }
-    // });
+    var ListItem = R.component({
+        controller: function() {
+            var self = this;
+            this.model.counter = 1;
+            this.model.text = "Every line is a separate component, click me to increase the number ";
+            this.model.onClick = function() {
+                self.model.counter++;
+                self.update();
+            }    
+        },
+        view: function(model) {
+            return R.li({ onClick: model.onClick }, model.text + model.counter.toString())
+        }
+    });
 
 
-    // var ListComponent = R.component({
-    //     view: function(model) {
+    var ListComponent = R.component({
+        view: function(model) {
             
-    //         var listItems = [
-    //             R.element(ListItem), 
-    //             R.element(ListItem), 
-    //             R.element(ListItem)
-    //         ];
+            var listItems = [
+                R.element(ListItem), 
+                R.element(ListItem), 
+                R.element(ListItem)
+            ];
 
-    //         return R.div({ classes: "row" }, [ 
-    //             R.div({ classes: "col-lg-12" }, [ 
-    //                 R.div({ classes: "panel panel-default" }, [
-    //                     R.div({ classes: "panel-heading" }, "List of components example"),
-    //                     R.div({ classes: "panel-body" , style: "height: 150px;overflow-y: auto"}, [
-    //                         R.ul(null, listItems)
-    //                     ])
-    //                 ])
-    //             ])
-    //         ]);  
-    //     }
-    // });
+            return R.div({ classes: "row" }, [ 
+                R.div({ classes: "col-lg-12" }, [ 
+                    R.div({ classes: "panel panel-default" }, [
+                        R.div({ classes: "panel-heading" }, "List of components example"),
+                        R.div({ classes: "panel-body" , style: "height: 150px;overflow-y: auto"}, [
+                            R.ul(null, listItems)
+                        ])
+                    ])
+                ])
+            ]);  
+        }
+    });
 
-    // var RootComponent = R.component({
-    //     view: function() {
-    //         return R.div({ classes: "container" }, [
-    //             R.element(TableComponent),
-    //             R.element(CounterComponent),
-    //             R.element(ListComponent)
-    //         ]);
-    //     }
-    // })
+    var RootComponent = R.component({
+        view: function() {
+            return R.div({ classes: "container" }, [
+                //R.element(TableComponent),
+                R.element(CounterComponent),
+                R.element(ListComponent)
+            ]);
+        }
+    })
     
     var SimpleComponent = R.component({
         controller: function() {
@@ -149,6 +149,6 @@
         }
     })
 
-    R.start(R.element(CounterComponent), document.getElementById('container'));
+    R.start(R.element(RootComponent), document.getElementById('container'));
 
 })(window.Reren);
