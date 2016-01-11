@@ -4,7 +4,7 @@ var assert = require('assert');
 
 describe("RerenComponent tests", function() {
 
-    it("It should throw when creating a component without a view", () => {
+    it("it should throw when creating a component without a view", () => {
         
         assert.throws(() => {
             var componentDef = ComponentFactory({});
@@ -14,7 +14,7 @@ describe("RerenComponent tests", function() {
         }, Error);
     });
 
-    it("It should return the view from the component when defined", () => {
+    it("it should return the view from the component when defined", () => {
         var rootElement = new VElement("div");
         var componentDef = ComponentFactory({
             view: () => {
@@ -26,7 +26,7 @@ describe("RerenComponent tests", function() {
         assert.equal(componentInstance.getView(), rootElement);
     });
 
-    it("It should return the controller from the component when defined", () => {
+    it("it should return the controller from the component when defined", () => {
         var componentDef = ComponentFactory({
             view: () => { return new VElement("div"); },
             controller: () => {}
@@ -37,7 +37,7 @@ describe("RerenComponent tests", function() {
         assert.deepEqual(componentInstance._controllerInstance.model, {});
     });
 
-    it("It should pass the model from the controller to the view when defined", () => {
+    it("it should pass the model from the controller to the view when defined", () => {
         var passedModel;
         var componentDef = ComponentFactory({
             view: (model) => { 
