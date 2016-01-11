@@ -21,6 +21,7 @@ describe("Component tests", function() {
                 return rootElement;
             }
         });
+        
         var componentInstance = new componentDef();
         assert.equal(componentInstance.getView(), rootElement);
     });
