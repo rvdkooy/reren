@@ -1,6 +1,6 @@
 var VElement = require('../src/vdom/vElement.js');
 var assert = require('assert');
-var { Component } = require('../src/component.js');
+var { ComponentFactory } = require('../src/components/rerenComponent');
 
 describe('vElement tests', function() {
   
@@ -36,7 +36,7 @@ describe('vElement tests', function() {
     });
 
     it('it should be able to create a vElement from a component', function () {
-          var comp = Component({ view: function() {
+          var comp = ComponentFactory({ view: function() {
               return new VElement("span", null, "content of the component");
           }});
 

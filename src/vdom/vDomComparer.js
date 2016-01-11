@@ -1,6 +1,6 @@
 var VElement = require('./vElement');
 var variables = require('../variables');
-var { Component } = require('../component');
+var { Component } = require('../components/rerenComponent');
 
 var { InsertElement, SetInnerHtml, RemoveElement, SetAttribute } = require('./domOperations');
 

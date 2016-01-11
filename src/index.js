@@ -6,7 +6,7 @@ var variables = require('./variables');
  * Api method for creating a Reren component
  * @type {The component factory method}
  */
-module.exports.component = require('./component');
+module.exports.component = require('./components/rerenComponent');
 
 /**
  * Api method for creating a Reren element
