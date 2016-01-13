@@ -2,6 +2,7 @@ var objectAssign = require('../utils/objectAssign');
 var variables = require('../variables');
 var documentHelpers = require('../vdom/documentHelpers');
 var DomComponent = require('./domComponent');
+var { applyDomChanges } = require('../vdom/domOperations');
 
 var RerenComponentMountable = {
     previousMountedDom: {},
@@ -36,7 +37,7 @@ var RerenComponentMountable = {
         if (typeof element.type === "string") {
             
             if (!previousComponentInstance || previousComponentInstance.tagName !== element.type) {
-                componentInstance = new DomComponent(element, mountId, identifier);
+                componentInstance = new DomComponent(element, mountId, identifier, applyDomChanges);
                 // console.log("mounting new domcomponent");
                 componentInstance.mount();
 
