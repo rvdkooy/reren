@@ -1,18 +1,20 @@
 var variables = require('../variables');
 var documentHelpers = require('./documentHelpers')
 
+var applyDomChanges = (operation) => {
+    operation.apply();
+};
+
 /**
  * This DOM operation will insert a new DOM element below the provided parent
  * @parentId             {The id of the parent element where to put the element on}
  * @identifier           {The identifier of the new element which can be used to find it later}
  * @tagName              {The tagName of the element (eg: div, span, h1 etc)}
  * @attributes           {The attribures of the new element (eg: style, title etc)}
- * @children             {The children of the new element, this can be: a single vElement, 
- *                        an array of vElements, a string or a number}
  */
 class InsertElement {
 
-    constructor(parentId, identifier, tagName, attributes, children, unMount) {
+    constructor(parentId, identifier, tagName, attributes, innerHtml) {
         if(!parentId) {
             throw new Error("For inserting we need a parentId");  
         } 
@@ -23,19 +25,7 @@ class InsertElement {
         this.identifier = identifier;
         this.tagName = tagName;
         this.attributes = attributes || {};
-        this.children = [];
-        this.unMount = unMount;
-
-        if (typeof children === "object") {
-            this.children.push(children);
-        } else if(typeof children === "string" || 
-                    typeof children === "number"){
-            this.content = children;
-        }
-
-        if(typeof children === "string" || typeof children === "number"){
-            this.content = children;
-        }
+        this.innerHtml = innerHtml;
     }
     
     apply() {
@@ -56,8 +46,8 @@ class InsertElement {
 
         }
 
-        if(this.content) {
-            element.innerHTML = this.content;
+        if(this.innerHtml) {
+            element.innerHTML = this.innerHtml;
         }
 
         documentHelpers.findElement(this.parentId).appendChild(element);
@@ -116,6 +106,7 @@ class SetAttribute {
 /**
  * Exports
  */
+module.exports.applyDomChanges = applyDomChanges;
 module.exports.InsertElement = InsertElement;
 module.exports.SetInnerHtml = SetInnerHtml;
 module.exports.RemoveElement = RemoveElement;

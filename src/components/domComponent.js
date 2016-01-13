@@ -1,52 +1,47 @@
 var documentHelpers = require('../vdom/documentHelpers');
 var variables = require('../variables');
+var { applyDomChanges } = require('../vdom/domOperations');
+var { InsertElement, SetInnerHtml, RemoveElement, SetAttribute } = require('../vdom/domOperations');
 
 class DomComponentMountable {
     
     mount() {
-        var mountElement = documentHelpers.findElement(this.parentIdentifier)
-
-        var element = document.createElement(this.tagName);
-        this._handleAttributes(this.attributes, element);
-        element.setAttribute(variables.ID_ATTR, this.identifier);
-
-        if (this.content) {
-            element.innerHTML = this.content;
-        }
-
-        mountElement.appendChild(element)
+        applyDomChanges(new InsertElement(this.parentIdentifier,
+                                            this.identifier,
+                                            this.tagName,
+                                            this.attributes,
+                                            this.content));
     }
 
     update(vElement) {
-        var mountElement = documentHelpers.findElement(this.identifier)
-
-        this._handleAttributes(vElement.attributes, mountElement);
+        this._handleAttributes(vElement.attributes);
 
         if (vElement.content !== this.content) {
             this.content = vElement.content;
-            mountElement.innerHTML = vElement.content;
+            applyDomChanges(new SetInnerHtml(this.identifier, vElement.content));
         }
     }
 
-    _handleAttributes(attributes, element) {
+    _handleAttributes(attributes) {
+        var domChanges = [];
         for(var prop in attributes) {
             
             if(prop === "classes") {
-                element.setAttribute("class", attributes[prop]);
+                domChanges.push(new SetAttribute(this.identifier, "class", attributes[prop]));
             }
             else if(prop === "onClick") {
-                element.addEventListener("click", attributes[prop]);
+                //element.addEventListener("click", attributes[prop]);
             }
             else {
-                element.setAttribute(prop, attributes[prop]);
+                domChanges.push(new SetAttribute(this.identifier, prop, attributes[prop]));
             }
         }
+        
+        domChanges.forEach(c => applyDomChanges(c))
     }
 
     unmount() {
-        var elementToRemove = documentHelpers.findElement(this.identifier);
-        console.log("removing element: " + elementToRemove);
-        documentHelpers.findElement(this.parentIdentifier).removeChild(elementToRemove);
+        applyDomChanges(new RemoveElement(this.parentIdentifier, this.identifier))
     }
 };
 

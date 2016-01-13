@@ -1,5 +1,4 @@
 var vElement = require('./vdom/vElement');
-var rerenUpdater = require('./vdom/rerenUpdater');
 var variables = require('./variables');
 
 /**

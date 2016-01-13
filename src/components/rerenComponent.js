@@ -1,4 +1,3 @@
-var rerenUpdater = require('../vdom/rerenUpdater');
 var objectAssign = require('../utils/objectAssign');
 var variables = require('../variables');
 var documentHelpers = require('../vdom/documentHelpers');
