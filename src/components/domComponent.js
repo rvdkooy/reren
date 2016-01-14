@@ -17,7 +17,7 @@ class DomComponentMountable {
 
         if (vElement.content !== this.content) {
             this.content = vElement.content;
-            domOperations.applyDomChanges(new SetInnerHtml(this.identifier, vElement.content));
+            domOperations.applyDomChanges(new domOperations.SetInnerHtml(this.identifier, vElement.content));
         }
     }
 
@@ -26,13 +26,13 @@ class DomComponentMountable {
         for(var prop in attributes) {
             
             if(prop === "classes") {
-                domChanges.push(new SetAttribute(this.identifier, "class", attributes[prop]));
+                domChanges.push(new domOperations.SetAttribute(this.identifier, "class", attributes[prop]));
             }
             else if(prop === "onClick") {
                 //element.addEventListener("click", attributes[prop]);
             }
             else {
-                domChanges.push(new SetAttribute(this.identifier, prop, attributes[prop]));
+                domChanges.push(new domOperations.SetAttribute(this.identifier, prop, attributes[prop]));
             }
         }
         
@@ -40,7 +40,7 @@ class DomComponentMountable {
     }
 
     unmount() {
-        domOperations.applyDomChanges(new RemoveElement(this.parentIdentifier, this.identifier))
+        domOperations.applyDomChanges(new domOperations.RemoveElement(this.parentIdentifier, this.identifier))
     }
 };
 
