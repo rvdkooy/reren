@@ -106,8 +106,10 @@ class SetAttribute {
 /**
  * Exports
  */
-module.exports.applyDomChanges = applyDomChanges;
-module.exports.InsertElement = InsertElement;
-module.exports.SetInnerHtml = SetInnerHtml;
-module.exports.RemoveElement = RemoveElement;
-module.exports.SetAttribute = SetAttribute;
+module.exports = {
+    applyDomChanges,
+    InsertElement,
+    RemoveElement,
+    SetAttribute,
+    SetInnerHtml
+};

@@ -1,13 +1,11 @@
 var documentHelpers = require('../vdom/documentHelpers');
 var variables = require('../variables');
-var { InsertElement, SetInnerHtml, RemoveElement, SetAttribute } = require('../vdom/domOperations');
+var domOperations = require('../vdom/domOperations');
 
 class DomComponentMountable {
-    constructor(domApplier) {
-        this.domApplier = domApplier;
-    }
+    
     mount() {
-        this.domApplier(new InsertElement(this.parentIdentifier,
+        domOperations.applyDomChanges(new domOperations.InsertElement(this.parentIdentifier,
                                             this.identifier,
                                             this.tagName,
                                             this.attributes,
@@ -19,7 +17,7 @@ class DomComponentMountable {
 
         if (vElement.content !== this.content) {
             this.content = vElement.content;
-            this.domApplier(new SetInnerHtml(this.identifier, vElement.content));
+            domOperations.applyDomChanges(new SetInnerHtml(this.identifier, vElement.content));
         }
     }
 
@@ -38,17 +36,17 @@ class DomComponentMountable {
             }
         }
         
-        domChanges.forEach(c => this.domApplier(c))
+        domChanges.forEach(c => domOperations.applyDomChanges(c))
     }
 
     unmount() {
-        this.domApplier(new RemoveElement(this.parentIdentifier, this.identifier))
+        domOperations.applyDomChanges(new RemoveElement(this.parentIdentifier, this.identifier))
     }
 };
 
 class DomComponent extends DomComponentMountable {
-    constructor(vElement, parentIdentifier, identifier, domApplier) {
-        super(domApplier)
+    constructor(vElement, parentIdentifier, identifier) {
+        super()
         this.tagName = vElement.type;
         this.content = vElement.content;
         this.attributes = vElement.attributes;
