@@ -3,29 +3,32 @@ var variables = require('../variables');
 var documentHelpers = require('../vdom/documentHelpers');
 var DomComponent = require('./domComponent');
 
-var RerenComponentMountable = {
-    previousMountedDom: {},
+var MountableRerenComponent = {
+    _previousMountedDom: {},
 
     mount: function (identifier) {
         this.identifier = identifier;
         
         var parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"))
-        
-        var componentInstanceTree = this._parseElement(this.getView(), 
+        var rootElement = this.getView();
+
+        var componentInstanceTree = this._parseElement(rootElement, 
                                                         parentIdentifier,
                                                         identifier,
-                                                        this.previousMountedDom);
-        this.previousMountedDom = componentInstanceTree;
+                                                        this._previousMountedDom);
+        this._previousMountedDom = componentInstanceTree;
     },
 
     updateComponent: function() {
         var parentIdentifier = this.identifier.substring(0, this.identifier.lastIndexOf("_"))
-        var newComponentInstanceTree = this._parseElement(this.getView(), 
+        var rootElement = this.getView();
+        
+        var newComponentInstanceTree = this._parseElement(rootElement, 
                                                         parentIdentifier, 
                                                         this.identifier,
-                                                        this.previousMountedDom);
+                                                        this._previousMountedDom);
 
-        this.previousMountedDom = newComponentInstanceTree;
+        this._previousMountedDom = newComponentInstanceTree;
     },
 
     _parseElement: function (element, mountId, identifier, previousComponentInstance) {
@@ -136,7 +139,7 @@ var ComponentFactory = function(definition) {
 
     RerenComponent.prototype = definition;
     RerenComponent.constructor = RerenComponent;
-    objectAssign(definition, RerenComponentMountable);
+    objectAssign(definition, MountableRerenComponent);
 
     return RerenComponent;
 };

@@ -7,8 +7,7 @@ class VElement {
         this.componentInstance = null;
         
 
-        if (typeof children === "object") {
-            
+        if (children && typeof children === "object") {
             if (Array.isArray(children)){
                 this.children = [];
                 children.forEach(child => {
