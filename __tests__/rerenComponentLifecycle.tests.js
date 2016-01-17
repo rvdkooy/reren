@@ -57,11 +57,18 @@ describe("reren Component lifecycle tests", () => {
     });
 
     describe("when mounting with a nested reren Component", () => {
+        var onMountSpy = sinon.spy();
         var componentInstance;
         var NestedComponent;
         
         beforeEach(() => {
+            onMountSpy.reset();
             NestedComponent = ComponentFactory({
+                controller: function() {
+                    this.onMount = (parentModal) => {
+                        onMountSpy(parentModal);
+                    };
+                },
                 view: () => {
                     return new VElement("span", null, "some text");
                 }
@@ -70,7 +77,7 @@ describe("reren Component lifecycle tests", () => {
             var Component = ComponentFactory({
                 view: () => {
                     return new VElement("div", null, 
-                        new VElement(NestedComponent));
+                        new VElement(NestedComponent, { foo: "bar" }));
                 }
             });
             
@@ -89,7 +96,11 @@ describe("reren Component lifecycle tests", () => {
             assert.equal(componentInstance._previousMountedDom.children[0] instanceof NestedComponent, true);
             assert.equal(componentInstance._previousMountedDom.children[0]._previousMountedDom.identifier, "1_1_1");
             assert.equal(componentInstance._previousMountedDom.children[0]._previousMountedDom.parentIdentifier, "1_1");
-            
+        });
+
+        it("it should call the onMountComponent on the nested component", () => {
+            assert(onMountSpy.calledOnce);
+            assert(onMountSpy.calledWith({ foo: "bar" }));
         });
 
         it("it should apply the correct dom operations", () => {
@@ -188,8 +199,8 @@ describe("reren Component lifecycle tests", () => {
 
         var NestedComponent = ComponentFactory({
             controller: function() {
-                this.onUpdate = () => {
-                    controllerUpdateSpy();
+                this.onUpdate = (parentModel) => {
+                    controllerUpdateSpy(parentModel);
                 };
             },
             view: () => {
@@ -204,7 +215,7 @@ describe("reren Component lifecycle tests", () => {
             
             var RootComponent = ComponentFactory({
                 view: () => {
-                    return new VElement("div", null, new VElement(NestedComponent));
+                    return new VElement("div", null, new VElement(NestedComponent, { foo: "bar" }));
                 }
             });
             
@@ -217,6 +228,7 @@ describe("reren Component lifecycle tests", () => {
 
         it("it should notify the nested component by calling the onUpdate", () => {
             assert(controllerUpdateSpy.calledOnce);
+            assert(controllerUpdateSpy.calledWith({ foo: "bar" }));
         });
 
         it("it should update the view of the nested component", () => {

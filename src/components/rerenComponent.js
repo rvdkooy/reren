@@ -83,6 +83,8 @@ var MountableRerenComponent = {
 
             if (!previousComponentInstance) { // OR changed
                 componentInstance = new element.type();
+                
+                componentInstance.onComponentMount(element.attributes);
                 componentInstance.mount(identifier);
 
                 if (parentComponentInstance && parentComponentInstance.addChild) {
@@ -92,8 +94,7 @@ var MountableRerenComponent = {
             } else {
                 componentInstance = previousComponentInstance;
                 
-                // Reren component update lifecycle:
-                componentInstance.onComponentUpdate();
+                componentInstance.onComponentUpdate(element.attributes);
                 componentInstance.updateComponent();
             }
         }
@@ -152,10 +153,17 @@ var ComponentFactory = function(definition) {
             return this.view(model);
         };
 
-        this.onComponentUpdate = () => {
+        this.onComponentMount = (parentModel) => {
+            
+            if (this._controllerInstance && this._controllerInstance.onMount) {
+                this._controllerInstance.onMount(parentModel);
+            }
+        };
+
+        this.onComponentUpdate = (parentModel) => {
             
             if (this._controllerInstance && this._controllerInstance.onUpdate) {
-                this._controllerInstance.onUpdate();
+                this._controllerInstance.onUpdate(parentModel);
             }
         };
 
