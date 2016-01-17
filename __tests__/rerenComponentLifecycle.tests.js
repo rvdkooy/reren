@@ -59,6 +59,7 @@ describe("reren Component lifecycle tests", () => {
     describe("when mounting with a nested reren Component", () => {
         var componentInstance;
         var NestedComponent;
+        
         beforeEach(() => {
             NestedComponent = ComponentFactory({
                 view: () => {
@@ -215,11 +216,11 @@ describe("reren Component lifecycle tests", () => {
         });
 
         it("it should notify the nested component by calling the onUpdate", () => {
-            assert.equal(controllerUpdateSpy.callCount, 1);
+            assert(controllerUpdateSpy.calledOnce);
         });
 
         it("it should update the view of the nested component", () => {
-            assert.equal(viewUpdateSpy.callCount, 2);
+            assert(viewUpdateSpy.calledTwice);
         });
     });
 
