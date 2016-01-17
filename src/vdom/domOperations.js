@@ -1,41 +1,31 @@
 var variables = require('../variables');
 var documentHelpers = require('./documentHelpers')
 
+var applyDomChanges = (operation) => {
+    operation.apply();
+};
+
 /**
  * This DOM operation will insert a new DOM element below the provided parent
- * @parentId             {The id of the parent element where to put the element on}
+ * @parentIdentifier             {The id of the parent element where to put the element on}
  * @identifier           {The identifier of the new element which can be used to find it later}
  * @tagName              {The tagName of the element (eg: div, span, h1 etc)}
  * @attributes           {The attribures of the new element (eg: style, title etc)}
- * @children             {The children of the new element, this can be: a single vElement, 
- *                        an array of vElements, a string or a number}
  */
 class InsertElement {
 
-    constructor(parentId, identifier, tagName, attributes, children, unMount) {
-        if(!parentId) {
-            throw new Error("For inserting we need a parentId");  
+    constructor(parentIdentifier, identifier, tagName, attributes, innerHtml) {
+        if(!parentIdentifier) {
+            throw new Error("For inserting we need a parentIdentifier");  
         } 
         if(!identifier) throw new Error("For inserting we need an indentifier");
         if(!tagName) throw new Error("For inserting we need an tagName");
         
-        this.parentId = parentId;
+        this.parentIdentifier = parentIdentifier;
         this.identifier = identifier;
         this.tagName = tagName;
         this.attributes = attributes || {};
-        this.children = [];
-        this.unMount = unMount;
-
-        if (typeof children === "object") {
-            this.children.push(children);
-        } else if(typeof children === "string" || 
-                    typeof children === "number"){
-            this.content = children;
-        }
-
-        if(typeof children === "string" || typeof children === "number"){
-            this.content = children;
-        }
+        this.innerHtml = innerHtml;
     }
     
     apply() {
@@ -56,11 +46,11 @@ class InsertElement {
 
         }
 
-        if(this.content) {
-            element.innerHTML = this.content;
+        if(this.innerHtml) {
+            element.innerHTML = this.innerHtml;
         }
 
-        documentHelpers.findElement(this.parentId).appendChild(element);
+        documentHelpers.findElement(this.parentIdentifier).appendChild(element);
     };
 }
 
@@ -83,20 +73,20 @@ class SetInnerHtml {
 
 /**
  * This DOM operation will remove the element from the DOM
- * @parentId             {The identifier of the parent element of the element we want to remove}
+ * @parentIdentifier             {The identifier of the parent element of the element we want to remove}
  * @identifier           {The identifier of the element we want to remove from the DOM}
  */
 class RemoveElement {
-    constructor(parentId, identifier) {
-        // console.log(`removing element with id: ${identifier} from parent with id: ${parentId}`);
+    constructor(parentIdentifier, identifier) {
+        // console.log(`removing element with id: ${identifier} from parent with id: ${parentIdentifier}`);
 
-        this.parentId = parentId;
+        this.parentIdentifier = parentIdentifier;
         this.identifier = identifier;
     }
 
     apply() {
         var elementToRemove = documentHelpers.findElement(this.identifier);
-        documentHelpers.findElement(this.parentId).removeChild(elementToRemove);
+        documentHelpers.findElement(this.parentIdentifier).removeChild(elementToRemove);
     }
 }
 
@@ -116,7 +106,10 @@ class SetAttribute {
 /**
  * Exports
  */
-module.exports.InsertElement = InsertElement;
-module.exports.SetInnerHtml = SetInnerHtml;
-module.exports.RemoveElement = RemoveElement;
-module.exports.SetAttribute = SetAttribute;
+module.exports = {
+    applyDomChanges,
+    InsertElement,
+    RemoveElement,
+    SetAttribute,
+    SetInnerHtml
+};

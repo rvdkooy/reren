@@ -69,8 +69,8 @@
                             R.div({ classes: "panel-heading" }, "Table example"),
                             R.div({ classes: "panel-body" , style: "height: 250px;overflow-y: auto"}, [
                                 R.table({ classes: "table table-striped" }, [
-                                    R.tbody(null, rows),
-                                    R.thead(null, R.th(null, R.tr(null, "name")))
+                                    R.thead(null, R.th(null, R.tr(null, "name"))),
+                                    R.tbody(null, rows)
                                 ])
                             ]),
                             R.div({ classes: "panel-footer" }, [ 
@@ -131,44 +131,23 @@
             ]);
         }
     })
- //    
-    //  var ChildComponent = R.component({
-    //      view: function() {
-    //          return R.div(null, "test");
-    //      }
-    //  });
-
-    // var RootComponent = R.component({
-    //     controller: function() {
-    //         var t = this;
-
-    //         var ViewModel = function() {
-    //             // var self = this;
-    //             this.value = true;
-    //             // this.onClick = function() {
-    //             //     self.value = !self.value;
-    //             //     t.update();
-    //             // }
-    //         };
-
-    //         var model = new ViewModel();
-    //         this.interval = setInterval(() => {
-    //             model.value = !model.value;
-    //             t.update();
-    //         }, 1000);
-    //         this.setViewModel(model);
-    //         this.unMount = function() {
-    //             clearInterval(t.interval);
-    //         }
-
-    //     },
-
-    //     view: function(model) {
-    //         return R.div(null, model.value.toString())
-    //     }
-    // });
-
-
+    
+    var SimpleComponent = R.component({
+        controller: function() {
+            var self = this;
+            this.model.timer = 1;
+            setInterval(function() {
+                self.model.timer += 1;
+                self.update();
+            }, 1000);
+            
+        },
+        view: function(model) {
+            return R.span(null, [
+                R.span(null, "some text " + model.timer)
+            ]);
+        }
+    })
 
     R.start(R.element(RootComponent), document.getElementById('container'));
 

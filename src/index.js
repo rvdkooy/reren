@@ -1,11 +1,11 @@
 var vElement = require('./vdom/vElement');
-var rerenUpdater = require('./vdom/rerenUpdater');
+var variables = require('./variables');
 
 /**
  * Api method for creating a Reren component
  * @type {The component factory method}
  */
-module.exports.component = require('./component');
+module.exports.component = require('./components/rerenComponent');
 
 /**
  * Api method for creating a Reren element
@@ -22,7 +22,12 @@ module.exports.element = vElement;
  * @rootNode         {The root DOM node the render all content on}
  */
 module.exports.start = (rootComponent, rootNode) => {
-    rerenUpdater.init(rootComponent, rootNode);
+    rootNode.setAttribute(variables.ID_ATTR, variables.ROOT_IDENTIFIER);
+    
+    var rootInstance = new rootComponent.type();
+
+    rootInstance.onComponentMount({});
+    rootInstance.mount(variables.ROOT_IDENTIFIER + "_1");
 };
 
 /**

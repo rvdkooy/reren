@@ -1,32 +1,33 @@
 var VElement = require('../src/vdom/vElement.js');
+var { ComponentFactory } = require('../src/components/rerenComponent.js');
 var assert = require('assert');
-var { Component } = require('../src/component.js');
 
-describe("Component tests", function() {
+describe("RerenComponent tests", function() {
 
-    it("It should throw when creating a component without a view", () => {
+    it("it should throw when creating a component without a view", () => {
         
         assert.throws(() => {
-            var componentDef = Component({});
+            var componentDef = ComponentFactory({});
             var componentInstance = new componentDef();
         }, (err) => {
             return /have a view!/.test(err);
         }, Error);
     });
 
-    it("It should return the view from the component when defined", () => {
+    it("it should return the view from the component when defined", () => {
         var rootElement = new VElement("div");
-        var componentDef = Component({
+        var componentDef = ComponentFactory({
             view: () => {
                 return rootElement;
             }
         });
+
         var componentInstance = new componentDef();
         assert.equal(componentInstance.getView(), rootElement);
     });
 
-    it("It should return the controller from the component when defined", () => {
-        var componentDef = Component({
+    it("it should return the controller from the component when defined", () => {
+        var componentDef = ComponentFactory({
             view: () => { return new VElement("div"); },
             controller: () => {}
         });
@@ -36,9 +37,9 @@ describe("Component tests", function() {
         assert.deepEqual(componentInstance._controllerInstance.model, {});
     });
 
-    it("It should pass the model from the controller to the view when defined", () => {
+    it("it should pass the model from the controller to the view when defined", () => {
         var passedModel;
-        var componentDef = Component({
+        var componentDef = ComponentFactory({
             view: (model) => { 
                 passedModel = model;
                 return new VElement("div"); 
