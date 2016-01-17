@@ -12,52 +12,28 @@ var MountableRerenComponent = {
         var parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"))
         var rootElement = this.getView();
 
-        var componentInstanceTree = this._parseElement(rootElement, 
-                                                        parentIdentifier,
-                                                        identifier,
-                                                        this._previousMountedDom);
-        this._previousMountedDom = componentInstanceTree;
+        var mountedDom = this._parseElement(rootElement, 
+                            identifier,
+                            parentIdentifier,
+                            this._previousMountedDom,
+                            null);
+        
+        this._previousMountedDom = mountedDom;
     },
 
     updateComponent: function() {
         var parentIdentifier = this.identifier.substring(0, this.identifier.lastIndexOf("_"))
         var rootElement = this.getView();
         
-        var newComponentInstanceTree = this._parseElement(rootElement, 
-                                                        parentIdentifier, 
-                                                        this.identifier,
-                                                        this._previousMountedDom);
+        var newMountedDom = this._parseElement(rootElement, 
+                            this.identifier,
+                            parentIdentifier, 
+                            this._previousMountedDom,
+                            null);
 
-        this._previousMountedDom = newComponentInstanceTree;
+        this._previousMountedDom = newMountedDom;
     },
-
-    _parseElement: function (element, mountId, identifier, previousComponentInstance) {
-        // check component instance against previous mounted dom
-        
-        var componentInstance = null;
-        
-        if (typeof element.type === "string") {
-            
-            if (!previousComponentInstance || previousComponentInstance.tagName !== element.type) {
-                componentInstance = new DomComponent(element, mountId, identifier);
-                // console.log("mounting new domcomponent");
-                componentInstance.mount();
-
-            } else {
-                componentInstance = previousComponentInstance;
-                // console.log("updating existing domcomponent");
-                componentInstance.update(element);
-            }
-        } else if (typeof element.type === "function") {
-            if (!previousComponentInstance) { // or changed !!
-                componentInstance = new element.type();
-                // console.log("mounting new reren component");
-                componentInstance.mount(identifier);
-            } else {
-                console.log("not implemented yet");
-            }
-        }
-
+    _handleDomComponentChildren: function(identifier, element, componentInstance) {
         // removing children
         if ((element.children && element.children.length === 0) && (
             componentInstance.children && componentInstance.children.length > 0)) {
@@ -68,18 +44,55 @@ var MountableRerenComponent = {
             };
         }
 
-        // adding children
+        // traverse children
         if(element.children && element.children.length) {
 
             element.children.forEach((child, index) => {
-                var componentInstanceChild = componentInstance.children[index];
-                var childComponent = this._parseElement(child, 
-                                                        identifier, 
-                                                        identifier + "_" + (index + 1),
-                                                        componentInstanceChild);
-
-                componentInstance.addChild(childComponent);
+                
+                this._parseElement(child, 
+                                    identifier + "_" + (index + 1),
+                                    identifier, 
+                                    componentInstance.children[index],
+                                    componentInstance);
             })
+        }
+    },
+
+    _parseElement: function (element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
+        var componentInstance = null;
+
+        if (typeof element.type === "string") {
+            
+            if (!previousComponentInstance || previousComponentInstance.tagName !== element.type) {
+                
+                componentInstance = new DomComponent(element, parentIdentifier, identifier);
+                componentInstance.mount();
+                
+                if (parentComponentInstance && parentComponentInstance.addChild) {
+                    parentComponentInstance.addChild(componentInstance);
+                }
+
+            } else {
+                componentInstance = previousComponentInstance;
+                componentInstance.update(element);
+            }
+
+            this._handleDomComponentChildren(identifier, element, componentInstance);
+
+        } else if (typeof element.type === "function") {
+
+            if (!previousComponentInstance) {
+                componentInstance = new element.type();
+                componentInstance.mount(identifier);
+
+                if (parentComponentInstance && parentComponentInstance.addChild) {
+                    parentComponentInstance.addChild(componentInstance);
+                }
+
+                //parentComponentInstance.addChild(componentInstance);
+            } else {
+                console.log("not implemented yet");
+            }
         }
 
         return componentInstance;

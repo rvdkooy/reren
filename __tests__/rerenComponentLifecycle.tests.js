@@ -1,7 +1,7 @@
 var sinon = require('sinon');
 var assert = require('assert');
 var domOperations = require('../src/vdom/domOperations');
-var { InsertElement } = require('../src/vdom/domOperations');
+var { InsertElement, SetInnerHtml, SetAttribute, RemoveElement } = require('../src/vdom/domOperations');
 var VElement = require('../src/vdom/vElement.js');
 var { ComponentFactory } = require('../src/components/rerenComponent.js');
 
@@ -97,6 +97,127 @@ describe("reren Component lifecycle tests", () => {
             assert.equal(operations[0].tagName, "div");
             assert(operations[1] instanceof InsertElement);
             assert.equal(operations[1].tagName, "span");
+        });
+    });
+    
+    describe("When mounted and not changing any component", () => {
+        
+        it("it should not do anything", () => {
+            var Component = ComponentFactory({
+                view: () => {
+                    return new VElement("div", null, 
+                        new VElement("span", null, "some text"));
+                }
+            });
+
+            var componentInstance = new Component();
+            componentInstance.mount("1_1");
+            operations = [];
+
+            componentInstance.updateComponent();
+            assert.equal(operations.length, 0);
+        })
+    });
+
+    describe("when mounted and changing a domcomponent", () => {
+        var componentInstance;
+
+        beforeEach(() => {
+            var Component = ComponentFactory({
+                view: () => {
+                    return new VElement("div", null, 
+                        new VElement("span", null, "some text"));
+                }
+            });
+            
+            componentInstance = new Component();
+            componentInstance.mount("1_1");
+            operations = [];
+        });
+
+        it("it should update the innerHtml if the content has changed", () => {
+            
+            componentInstance.view = function updatedView() {
+                return new VElement("div", null, 
+                    new VElement("span", null, "updated text"));
+            }
+            
+            componentInstance.updateComponent()
+
+            assert.equal(operations.length, 1);
+            assert(operations[0] instanceof SetInnerHtml);
+            assert.equal(componentInstance._previousMountedDom.children[0].content, "updated text");
+        });
+
+        it("it should update the attributes if the attributes have changed", () => {
+            
+            componentInstance.view = function updatedView() {
+                return new VElement("div", null, 
+                    new VElement("span", { id: "my_id" }, "some text"));
+            }
+            
+            componentInstance.updateComponent()
+
+            assert.equal(operations.length, 1);
+            assert(operations[0] instanceof SetAttribute);
+            assert.equal(componentInstance._previousMountedDom.children[0].attributes.id, "my_id");
+        });
+
+        it("it should remove the domcomponent if it is not present anymore", () => {
+            
+            componentInstance.view = function updatedView() {
+                return new VElement("div");
+            }
+            
+            componentInstance.updateComponent();
+
+            assert.equal(operations.length, 1);
+            assert(operations[0] instanceof RemoveElement);
+            assert(operations[0].identifier, "1_1_1");
+            assert(operations[0].parentIdentifier, "1_1");
+            assert.equal(componentInstance._previousMountedDom.children.length, 0);
+        });
+    });
+    
+    describe("when mounted and changing it with a nested rerenComponent", () => {
+        var spy, componentInstance, nestedInstance;
+
+        var NestedComponent = ComponentFactory({
+            onUpdate: () => {
+                spy();
+            },
+            view: () => {
+                return new VElement("span", null, "some text");
+            }
+        });
+
+        beforeEach(() => {
+            spy = sinon.spy();
+            var Component = ComponentFactory({
+                view: () => {
+                    return new VElement("div", null, new VElement(NestedComponent));
+                }
+            });
+            
+            componentInstance = new Component();
+            componentInstance.mount("1_1");
+            operations = [];
+        });
+
+        it("it should update the root component", () => {
+            componentInstance.view = function updatedView() {
+                return new VElement("div", { id: "my_id" }, new VElement(NestedComponent));
+            }
+            
+            componentInstance.updateComponent();
+            
+            assert.equal(operations.length, 1);
+            assert(operations[0] instanceof SetAttribute);
+        });
+
+        it.skip("it should notify the nested component", () => {
+            assert(spy.calledOnce);
+            assert(spy.calledWith({}));
         });
     });
 

@@ -5,7 +5,7 @@ var domOperations = require('../src/vdom/domOperations');
 var DomComponent = require('../src/components/domComponent');
 
 describe('domComponent tests', () => {
-    var defaultParentId = "1", defaultIdentifier = "1_1", operations = [], stub;
+    var defaultParentIdentifier = "1", defaultIdentifier = "1_1", operations = [], stub;
 
     describe('when mounting', () => {
 
@@ -20,7 +20,7 @@ describe('domComponent tests', () => {
             var elementDefinition = new VElement("div", { classes: "myclass" }, "innerhtml" );
             
             var domComponent = new DomComponent(elementDefinition, 
-                                                defaultParentId, 
+                                                defaultParentIdentifier, 
                                                 defaultIdentifier);
 
             domComponent.mount();
@@ -30,7 +30,7 @@ describe('domComponent tests', () => {
             assert.equal(operations[0].tagName, "div");
             assert.deepEqual(operations[0].attributes, { classes: "myclass" });
             assert.equal(operations[0].innerHtml, "innerhtml");
-            assert.equal(operations[0].parentId, "1");
+            assert.equal(operations[0].parentIdentifier, "1");
             assert.equal(operations[0].identifier, "1_1");
         });
 
@@ -40,7 +40,7 @@ describe('domComponent tests', () => {
             var updatedElement = new VElement("div", { classes: "myclass" }, null);
             
             var domComponent = new DomComponent(initialElement, 
-                                                defaultParentId, 
+                                                defaultParentIdentifier, 
                                                 defaultIdentifier);
 
             domComponent.update(updatedElement);
@@ -58,7 +58,7 @@ describe('domComponent tests', () => {
             var updatedElement = new VElement("div", null, "bar");
             
             var domComponent = new DomComponent(initialElement, 
-                                                defaultParentId, 
+                                                defaultParentIdentifier, 
                                                 defaultIdentifier);
 
             domComponent.update(updatedElement);
@@ -74,7 +74,7 @@ describe('domComponent tests', () => {
             var initialElement = new VElement("div", null, "foo");
 
             var domComponent = new DomComponent(initialElement, 
-                                                defaultParentId, 
+                                                defaultParentIdentifier, 
                                                 defaultIdentifier);
 
             domComponent.unmount();

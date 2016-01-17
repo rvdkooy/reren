@@ -7,21 +7,21 @@ var applyDomChanges = (operation) => {
 
 /**
  * This DOM operation will insert a new DOM element below the provided parent
- * @parentId             {The id of the parent element where to put the element on}
+ * @parentIdentifier             {The id of the parent element where to put the element on}
  * @identifier           {The identifier of the new element which can be used to find it later}
  * @tagName              {The tagName of the element (eg: div, span, h1 etc)}
  * @attributes           {The attribures of the new element (eg: style, title etc)}
  */
 class InsertElement {
 
-    constructor(parentId, identifier, tagName, attributes, innerHtml) {
-        if(!parentId) {
-            throw new Error("For inserting we need a parentId");  
+    constructor(parentIdentifier, identifier, tagName, attributes, innerHtml) {
+        if(!parentIdentifier) {
+            throw new Error("For inserting we need a parentIdentifier");  
         } 
         if(!identifier) throw new Error("For inserting we need an indentifier");
         if(!tagName) throw new Error("For inserting we need an tagName");
         
-        this.parentId = parentId;
+        this.parentIdentifier = parentIdentifier;
         this.identifier = identifier;
         this.tagName = tagName;
         this.attributes = attributes || {};
@@ -50,7 +50,7 @@ class InsertElement {
             element.innerHTML = this.innerHtml;
         }
 
-        documentHelpers.findElement(this.parentId).appendChild(element);
+        documentHelpers.findElement(this.parentIdentifier).appendChild(element);
     };
 }
 
@@ -73,20 +73,20 @@ class SetInnerHtml {
 
 /**
  * This DOM operation will remove the element from the DOM
- * @parentId             {The identifier of the parent element of the element we want to remove}
+ * @parentIdentifier             {The identifier of the parent element of the element we want to remove}
  * @identifier           {The identifier of the element we want to remove from the DOM}
  */
 class RemoveElement {
-    constructor(parentId, identifier) {
-        // console.log(`removing element with id: ${identifier} from parent with id: ${parentId}`);
+    constructor(parentIdentifier, identifier) {
+        // console.log(`removing element with id: ${identifier} from parent with id: ${parentIdentifier}`);
 
-        this.parentId = parentId;
+        this.parentIdentifier = parentIdentifier;
         this.identifier = identifier;
     }
 
     apply() {
         var elementToRemove = documentHelpers.findElement(this.identifier);
-        documentHelpers.findElement(this.parentId).removeChild(elementToRemove);
+        documentHelpers.findElement(this.parentIdentifier).removeChild(elementToRemove);
     }
 }
 

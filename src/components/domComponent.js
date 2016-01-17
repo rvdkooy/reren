@@ -35,7 +35,7 @@ class DomComponentMountable {
                 domChanges.push(new domOperations.SetAttribute(this.identifier, prop, attributes[prop]));
             }
         }
-        
+        this.attributes = attributes;
         domChanges.forEach(c => domOperations.applyDomChanges(c))
     }
 

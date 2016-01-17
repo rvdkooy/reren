@@ -14,7 +14,7 @@ class VElement {
                     this.children.push(child);
                 })
             } else {
-                this.children = [ children ];    
+                this.children = [ children ];
             }
         } else if (children) {
             this.content = children;
