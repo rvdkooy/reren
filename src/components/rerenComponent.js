@@ -81,7 +81,7 @@ var MountableRerenComponent = {
 
         } else if (typeof element.type === "function") {
 
-            if (!previousComponentInstance) {
+            if (!previousComponentInstance) { // OR changed
                 componentInstance = new element.type();
                 componentInstance.mount(identifier);
 
@@ -89,9 +89,12 @@ var MountableRerenComponent = {
                     parentComponentInstance.addChild(componentInstance);
                 }
 
-                //parentComponentInstance.addChild(componentInstance);
             } else {
-                console.log("not implemented yet");
+                componentInstance = previousComponentInstance;
+                
+                // Reren component update lifecycle:
+                componentInstance.onComponentUpdate();
+                componentInstance.updateComponent();
             }
         }
 
@@ -107,8 +110,11 @@ var MountableRerenComponent = {
 class BaseController {
     constructor(update) {
         this.update = update;
+        //this.onUpdate = function(){ };
         this.model = {};
     }
+
+    //onUpdate;
 
     update;
 };
@@ -127,7 +133,6 @@ var ComponentFactory = function(definition) {
             if (!this.view) {
                 throw new Error("A component should always have a view!");
             }
-            
             if (this.controller) {
                 this.controller.prototype = new BaseController(this.updateComponent.bind(this));
                 this.controller.constructor = this.controller;
@@ -145,6 +150,13 @@ var ComponentFactory = function(definition) {
             }
             
             return this.view(model);
+        };
+
+        this.onComponentUpdate = () => {
+            
+            if (this._controllerInstance && this._controllerInstance.onUpdate) {
+                this._controllerInstance.onUpdate();
+            }
         };
 
         init();

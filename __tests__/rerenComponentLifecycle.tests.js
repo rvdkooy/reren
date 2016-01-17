@@ -179,45 +179,47 @@ describe("reren Component lifecycle tests", () => {
         });
     });
     
-    describe("when mounted and changing it with a nested rerenComponent", () => {
-        var spy, componentInstance, nestedInstance;
+    describe("when mounted and changing with a nested rerenComponent in it", () => {
+        var controllerUpdateSpy = sinon.spy(), 
+            viewUpdateSpy = sinon.spy(), 
+            componentInstance,
+            nestedInstance;
 
         var NestedComponent = ComponentFactory({
-            onUpdate: () => {
-                spy();
+            controller: function() {
+                this.onUpdate = () => {
+                    controllerUpdateSpy();
+                };
             },
             view: () => {
+                viewUpdateSpy();
                 return new VElement("span", null, "some text");
             }
         });
 
         beforeEach(() => {
-            spy = sinon.spy();
-            var Component = ComponentFactory({
+            controllerUpdateSpy.reset();
+            viewUpdateSpy.reset();
+            
+            var RootComponent = ComponentFactory({
                 view: () => {
                     return new VElement("div", null, new VElement(NestedComponent));
                 }
             });
             
-            componentInstance = new Component();
+            componentInstance = new RootComponent();
             componentInstance.mount("1_1");
             operations = [];
-        });
 
-        it("it should update the root component", () => {
-            componentInstance.view = function updatedView() {
-                return new VElement("div", { id: "my_id" }, new VElement(NestedComponent));
-            }
-            
             componentInstance.updateComponent();
-            
-            assert.equal(operations.length, 1);
-            assert(operations[0] instanceof SetAttribute);
         });
 
-        it.skip("it should notify the nested component", () => {
-            assert(spy.calledOnce);
-            assert(spy.calledWith({}));
+        it("it should notify the nested component by calling the onUpdate", () => {
+            assert.equal(controllerUpdateSpy.callCount, 1);
+        });
+
+        it("it should update the view of the nested component", () => {
+            assert.equal(viewUpdateSpy.callCount, 2);
         });
     });
 
