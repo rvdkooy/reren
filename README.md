@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rvdkooy/reren.svg?branch=master)](https://travis-ci.org/rvdkooy/reren)
+
 # reren
 A simple javascript viewengine inspired by React, Angular and KnockoutJs
 
