@@ -3,6 +3,37 @@
     var CounterComponent = R.component({
         controller: function() {
             var self = this;
+
+            function determineBackgroundColor(timer) {
+                var backgroundColor = "red";
+                if (timer % 2 === 0) {
+                    backgroundColor = "green";
+                }
+                return backgroundColor;
+            }
+            
+            this.onMount = function(timer) {
+                self.model = { 
+                    timer: timer,
+                    backgroundColor: determineBackgroundColor(timer)
+                }
+            };
+
+            this.onUpdate = function(timer) {
+                self.model = { 
+                    timer: timer,
+                    backgroundColor: determineBackgroundColor(timer)
+                }
+            };
+        },
+        view: function(model) {
+            return R.h3({ style: "color: " + model.backgroundColor + "" }, model.timer.toString());
+        }
+    });
+
+    var CounterComponentWrapper = R.component({
+        controller: function() {
+            var self = this;
             
             this.model.timer = 0;
             this.model.stopTimer = function() {
@@ -18,17 +49,12 @@
             };
         },
         view: function(model) {
-            var backgroundColor = "red";
-            if(model.timer % 2 === 0) {
-                backgroundColor = "green";
-            }
-
             return R.div({ classes: "row" }, [ 
                     R.div({ classes: "col-lg-12" }, [ 
                         R.div({ classes: "panel panel-default" }, [
                             R.div({ classes: "panel-heading" }, "Counter example"),
                             R.div({ classes: "panel-body" }, [
-                                R.h3({ style: "color: " + backgroundColor + "" }, model.timer.toString())
+                                R.element(CounterComponent, model.timer)
                             ]),
                             R.div({ classes: "panel-footer" }, [ 
                                 R.button({ type: "button", classes: "btn btn-xs btn-primary", onClick: model.startTimer }, "Start timer"),
@@ -40,7 +66,6 @@
                 ]);  
         }
     });
-
 
     var TableComponent = R.component({
         controller: function() {
@@ -126,7 +151,7 @@
         view: function() {
             return R.div({ classes: "container" }, [
                 R.element(TableComponent),
-                R.element(CounterComponent),
+                R.element(CounterComponentWrapper),
                 R.element(ListComponent)
             ]);
         }
