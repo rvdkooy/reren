@@ -93,7 +93,7 @@ new VElement(NestedComponent, model);
 - [x] Reconize changes in attributes in vdom and apply them to the real dom
 - [ ] Implement changes in lists by using a unique key (like react)
 - [x] Only update components that really changed (instead of comparing the whole vdom)
-- [ ] Implement more events (instead of only onClick)
+- [x] Implement more events (instead of only onClick)
 - [x] Communication between components (eg: props)
 - [ ] cleaning up components (unmounting them) and event handlers
 
