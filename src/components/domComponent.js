@@ -1,6 +1,7 @@
 var documentHelpers = require('../vdom/documentHelpers');
 var variables = require('../variables');
 var domOperations = require('../vdom/domOperations');
+var events = require('../htmlVariables').events;
 
 class DomComponentMountable {
     
@@ -8,8 +9,9 @@ class DomComponentMountable {
         domOperations.applyDomChanges(new domOperations.InsertElement(this.parentIdentifier,
                                             this.identifier,
                                             this.tagName,
-                                            this.attributes,
                                             this.content));
+
+        this._handleAttributes(this.attributes, true);
     }
 
     update(vElement) {
@@ -21,20 +23,33 @@ class DomComponentMountable {
         }
     }
 
-    _handleAttributes(attributes) {
+    _handleAttributes(attributes, mounting) {
         var domChanges = [];
+
+        var isEventListener = (property) => {
+            for (var i = 0; i < events.length; i++) {
+                if(events[i] === prop.toLowerCase()) return true;
+            };
+        };
+
         for(var prop in attributes) {
             
-            if(prop === "classes") {
-                domChanges.push(new domOperations.SetAttribute(this.identifier, "class", attributes[prop]));
-            }
-            else if(prop === "onClick") {
-                //element.addEventListener("click", attributes[prop]);
-            }
-            else {
-                domChanges.push(new domOperations.SetAttribute(this.identifier, prop, attributes[prop]));
+            if (!this.attributes || (this.attributes[prop] !== attributes[prop]) || mounting) {
+
+                if(isEventListener(prop)) {
+                    domChanges.push(new domOperations.AddEventListener(this.identifier, prop, attributes[prop]));
+
+                } else if (prop === "classes") {
+                    domChanges.push(new domOperations.SetAttribute(this.identifier, "class", attributes[prop]));
+
+                } 
+                else {
+                    domChanges.push(new domOperations.SetAttribute(this.identifier, prop, attributes[prop]));
+
+                }
             }
         }
+
         this.attributes = attributes;
         domChanges.forEach(c => domOperations.applyDomChanges(c))
     }

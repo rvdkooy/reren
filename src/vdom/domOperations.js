@@ -14,7 +14,7 @@ var applyDomChanges = (operation) => {
  */
 class InsertElement {
 
-    constructor(parentIdentifier, identifier, tagName, attributes, innerHtml) {
+    constructor(parentIdentifier, identifier, tagName, innerHtml) {
         if(!parentIdentifier) {
             throw new Error("For inserting we need a parentIdentifier");  
         } 
@@ -24,27 +24,12 @@ class InsertElement {
         this.parentIdentifier = parentIdentifier;
         this.identifier = identifier;
         this.tagName = tagName;
-        this.attributes = attributes || {};
         this.innerHtml = innerHtml;
     }
     
     apply() {
         var element = document.createElement(this.tagName);
         element.setAttribute(variables.ID_ATTR, this.identifier);
-        
-        for(var prop in this.attributes) {
-            
-            if(prop === "classes") {
-                element.setAttribute("class", this.attributes[prop]);
-            }
-            else if(prop === "onClick") {
-                element.addEventListener("click", this.attributes[prop]);
-            }
-            else {
-                element.setAttribute(prop, this.attributes[prop]);
-            }
-
-        }
 
         if(this.innerHtml) {
             element.innerHTML = this.innerHtml;
@@ -103,6 +88,20 @@ class SetAttribute {
     }
 }
 
+class AddEventListener {
+    constructor(identifier, eventName, handler) {
+        this.identifier = identifier;
+        this.eventName = eventName;
+        this.handler = handler;
+    }
+
+    apply() {
+        var element = documentHelpers.findElement(this.identifier);
+        var shortEventName = this.eventName.toLowerCase().substring(2);
+        element.addEventListener(shortEventName, this.handler);
+    }
+}
+
 /**
  * Exports
  */
@@ -111,5 +110,6 @@ module.exports = {
     InsertElement,
     RemoveElement,
     SetAttribute,
-    SetInnerHtml
+    SetInnerHtml,
+    AddEventListener
 };

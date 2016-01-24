@@ -34,6 +34,6 @@ module.exports.start = (rootComponent, rootNode) => {
  * Shorthand helpers from creating common HTML vElements like: div's, span's, button's etc
  * example: instead of writing: R.element("div", null, OtherElement); --> R.div(null, OtherElement)
  */
-require('./htmlElements').forEach(e => {
+require('./htmlVariables').elements.forEach(e => {
     module.exports[e] = (attr, children) => { return vElement(e, attr, children); };
 });
