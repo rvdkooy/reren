@@ -5,14 +5,13 @@ class VElement {
         this.content = null;
         this.children = null;
         this.componentInstance = null;
-        
 
         if (children && typeof children === "object") {
-            if (Array.isArray(children)){
+            if (Array.isArray(children)) {
                 this.children = [];
                 children.forEach(child => {
                     this.children.push(child);
-                })
+                });
             } else {
                 this.children = [ children ];
             }

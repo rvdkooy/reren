@@ -16,11 +16,11 @@ describe('domComponent tests', () => {
         });
 
         it('it should create a new element with inner html', () => {
-            
+
             var elementDefinition = new VElement("div", { classes: "myclass", onClick: function() {} }, "innerhtml" );
-            
-            var domComponent = new DomComponent(elementDefinition, 
-                                                defaultParentIdentifier, 
+
+            var domComponent = new DomComponent(elementDefinition,
+                                                defaultParentIdentifier,
                                                 defaultIdentifier);
 
             domComponent.mount();
@@ -43,12 +43,12 @@ describe('domComponent tests', () => {
         });
 
         it('it should update an attribute when updated', () => {
-            
+
             var initialElement = new VElement("div", null, null);
             var updatedElement = new VElement("div", { classes: "myclass" }, null);
-            
-            var domComponent = new DomComponent(initialElement, 
-                                                defaultParentIdentifier, 
+
+            var domComponent = new DomComponent(initialElement,
+                                                defaultParentIdentifier,
                                                 defaultIdentifier);
 
             domComponent.update(updatedElement);
@@ -61,12 +61,12 @@ describe('domComponent tests', () => {
         });
 
         it('it should update the inner html when updated', () => {
-            
+
             var initialElement = new VElement("div", null, "foo");
             var updatedElement = new VElement("div", null, "bar");
-            
-            var domComponent = new DomComponent(initialElement, 
-                                                defaultParentIdentifier, 
+
+            var domComponent = new DomComponent(initialElement,
+                                                defaultParentIdentifier,
                                                 defaultIdentifier);
 
             domComponent.update(updatedElement);
@@ -78,12 +78,12 @@ describe('domComponent tests', () => {
         });
 
         it('it should update an eventlistener when updated', () => {
-            
+
             var initialElement = new VElement("div", null, null);
             var updatedElement = new VElement("div", { onClick: () => {} }, null);
-            
-            var domComponent = new DomComponent(initialElement, 
-                                                defaultParentIdentifier, 
+
+            var domComponent = new DomComponent(initialElement,
+                                                defaultParentIdentifier,
                                                 defaultIdentifier);
 
             domComponent.update(updatedElement);
@@ -96,11 +96,11 @@ describe('domComponent tests', () => {
         });
 
         it('it should remove the element when unmounted', () => {
-            
+
             var initialElement = new VElement("div", null, "foo");
 
-            var domComponent = new DomComponent(initialElement, 
-                                                defaultParentIdentifier, 
+            var domComponent = new DomComponent(initialElement,
+                                                defaultParentIdentifier,
                                                 defaultIdentifier);
 
             domComponent.unmount();
@@ -111,7 +111,7 @@ describe('domComponent tests', () => {
         });
 
         afterEach(() => {
-            if(stub) {
+            if (stub) {
                 stub.restore();
             }
             operations = [];

@@ -1,10 +1,8 @@
-var documentHelpers = require('../vdom/documentHelpers');
-var variables = require('../variables');
 var domOperations = require('../vdom/domOperations');
 var events = require('../htmlVariables').events;
 
 class DomComponentMountable {
-    
+
     mount() {
         domOperations.applyDomChanges(new domOperations.InsertElement(this.parentIdentifier,
                                             this.identifier,
@@ -28,40 +26,37 @@ class DomComponentMountable {
 
         var isEventListener = (property) => {
             for (var i = 0; i < events.length; i++) {
-                if(events[i] === prop.toLowerCase()) return true;
-            };
+                if (events[i] === property.toLowerCase()) return true;
+            }
         };
 
-        for(var prop in attributes) {
-            
+        for (var prop in attributes) {
             if (!this.attributes || (this.attributes[prop] !== attributes[prop]) || mounting) {
 
-                if(isEventListener(prop)) {
+                if (isEventListener(prop)) {
                     domChanges.push(new domOperations.AddEventListener(this.identifier, prop, attributes[prop]));
 
                 } else if (prop === "classes") {
                     domChanges.push(new domOperations.SetAttribute(this.identifier, "class", attributes[prop]));
 
-                } 
-                else {
+                } else {
                     domChanges.push(new domOperations.SetAttribute(this.identifier, prop, attributes[prop]));
-
                 }
             }
         }
 
         this.attributes = attributes;
-        domChanges.forEach(c => domOperations.applyDomChanges(c))
+        domChanges.forEach(c => domOperations.applyDomChanges(c));
     }
 
     unmount() {
-        domOperations.applyDomChanges(new domOperations.RemoveElement(this.parentIdentifier, this.identifier))
+        domOperations.applyDomChanges(new domOperations.RemoveElement(this.parentIdentifier, this.identifier));
     }
-};
+}
 
 class DomComponent extends DomComponentMountable {
     constructor(vElement, parentIdentifier, identifier) {
-        super()
+        super();
         this.tagName = vElement.type;
         this.content = vElement.content;
         this.attributes = vElement.attributes;

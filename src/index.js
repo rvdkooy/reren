@@ -11,7 +11,7 @@ module.exports.component = require('./components/rerenComponent');
  * Api method for creating a Reren element
  * @tag             {The tagname of the element. eg: div}
  * @attributes         {The attributes to put on the element. eg: style: { color: "red" }}
- * @children         {The children of the element. 
+ * @children         {The children of the element.
  *                     this can be antother element, an array of elements or a string }
  */
 module.exports.element = vElement;
@@ -23,8 +23,8 @@ module.exports.element = vElement;
  */
 module.exports.start = (rootComponent, rootNode) => {
     rootNode.setAttribute(variables.ID_ATTR, variables.ROOT_IDENTIFIER);
-    
-    var rootInstance = new rootComponent.type();
+    var RootComponent = rootComponent.type;
+    var rootInstance = new RootComponent();
 
     rootInstance.onComponentMount({});
     rootInstance.mount(variables.ROOT_IDENTIFIER + "_1");

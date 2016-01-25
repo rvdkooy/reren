@@ -1,5 +1,5 @@
 var variables = require('../variables');
-var documentHelpers = require('./documentHelpers')
+var documentHelpers = require('./documentHelpers');
 
 var applyDomChanges = (operation) => {
     operation.apply();
@@ -15,28 +15,29 @@ var applyDomChanges = (operation) => {
 class InsertElement {
 
     constructor(parentIdentifier, identifier, tagName, innerHtml) {
-        if(!parentIdentifier) {
-            throw new Error("For inserting we need a parentIdentifier");  
-        } 
-        if(!identifier) throw new Error("For inserting we need an indentifier");
-        if(!tagName) throw new Error("For inserting we need an tagName");
-        
+        if (!parentIdentifier) {
+            throw new Error("For inserting we need a parentIdentifier");
+        }
+
+        if (!identifier) throw new Error("For inserting we need an indentifier");
+        if (!tagName) throw new Error("For inserting we need an tagName");
+
         this.parentIdentifier = parentIdentifier;
         this.identifier = identifier;
         this.tagName = tagName;
         this.innerHtml = innerHtml;
     }
-    
+
     apply() {
         var element = document.createElement(this.tagName);
         element.setAttribute(variables.ID_ATTR, this.identifier);
 
-        if(this.innerHtml) {
+        if (this.innerHtml) {
             element.innerHTML = this.innerHtml;
         }
 
         documentHelpers.findElement(this.parentIdentifier).appendChild(element);
-    };
+    }
 }
 
 /**
@@ -50,10 +51,10 @@ class SetInnerHtml {
         this.identifier = identifier;
         this.innerHtml = innerHtml;
     }
-    
+
     apply() {
         documentHelpers.findElement(this.identifier).innerHTML = this.innerHtml;
-    };
+    }
 }
 
 /**

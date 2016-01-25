@@ -3,28 +3,28 @@ var assert = require('assert');
 var domOperations = require('../src/vdom/domOperations');
 var { InsertElement, SetInnerHtml, SetAttribute, RemoveElement } = require('../src/vdom/domOperations');
 var VElement = require('../src/vdom/vElement.js');
-var { ComponentFactory } = require('../src/components/rerenComponent.js');
+var { componentFactory } = require('../src/components/rerenComponent.js');
 
 describe("reren Component lifecycle tests", () => {
-    
-    var cleanUpDom, operations = [], stub;
+
+    var operations = [], stub;
 
     beforeEach(() => {
         stub = sinon.stub(domOperations, "applyDomChanges", (operation) => {
             operations.push(operation);
         });
     });
-    
+
     describe("when mounting with a single rerenComponent", () => {
         var componentInstance;
         beforeEach(() => {
-            var Component = ComponentFactory({
+            var Component = componentFactory({
                 view: () => {
-                    return new VElement("div", null, 
+                    return new VElement("div", null,
                         new VElement("span", null, "some text"));
                 }
             });
-            
+
             componentInstance = new Component();
             componentInstance.mount("1_1");
         });
@@ -60,10 +60,10 @@ describe("reren Component lifecycle tests", () => {
         var onMountSpy = sinon.spy();
         var componentInstance;
         var NestedComponent;
-        
+
         beforeEach(() => {
             onMountSpy.reset();
-            NestedComponent = ComponentFactory({
+            NestedComponent = componentFactory({
                 controller: function() {
                     this.onMount = (parentModal) => {
                         onMountSpy(parentModal);
@@ -74,13 +74,13 @@ describe("reren Component lifecycle tests", () => {
                 }
             });
 
-            var Component = ComponentFactory({
+            var Component = componentFactory({
                 view: () => {
-                    return new VElement("div", null, 
+                    return new VElement("div", null,
                         new VElement(NestedComponent, { foo: "bar" }));
                 }
             });
-            
+
             componentInstance = new Component();
             componentInstance.mount("1_1");
         });
@@ -91,7 +91,7 @@ describe("reren Component lifecycle tests", () => {
             assert.equal(componentInstance._previousMountedDom.tagName, "div");
             assert.equal(componentInstance._previousMountedDom.attributes, null);
             assert.equal(componentInstance._previousMountedDom.content, null);
-            
+
             assert.equal(componentInstance._previousMountedDom.children.length, 1);
             assert.equal(componentInstance._previousMountedDom.children[0] instanceof NestedComponent, true);
             assert.equal(componentInstance._previousMountedDom.children[0]._previousMountedDom.identifier, "1_1_1");
@@ -111,13 +111,13 @@ describe("reren Component lifecycle tests", () => {
             assert.equal(operations[1].tagName, "span");
         });
     });
-    
+
     describe("When mounted and not changing any component", () => {
-        
+
         it("it should not do anything", () => {
-            var Component = ComponentFactory({
+            var Component = componentFactory({
                 view: () => {
-                    return new VElement("div", null, 
+                    return new VElement("div", null,
                         new VElement("span", null, "some text"));
                 }
             });
@@ -128,33 +128,33 @@ describe("reren Component lifecycle tests", () => {
 
             componentInstance.updateComponent();
             assert.equal(operations.length, 0);
-        })
+        });
     });
 
     describe("when mounted and changing a domcomponent", () => {
         var componentInstance;
 
         beforeEach(() => {
-            var Component = ComponentFactory({
+            var Component = componentFactory({
                 view: () => {
-                    return new VElement("div", null, 
+                    return new VElement("div", null,
                         new VElement("span", null, "some text"));
                 }
             });
-            
+
             componentInstance = new Component();
             componentInstance.mount("1_1");
             operations = [];
         });
 
         it("it should update the innerHtml if the content has changed", () => {
-            
+
             componentInstance.view = function updatedView() {
-                return new VElement("div", null, 
+                return new VElement("div", null,
                     new VElement("span", null, "updated text"));
-            }
-            
-            componentInstance.updateComponent()
+            };
+
+            componentInstance.updateComponent();
 
             assert.equal(operations.length, 1);
             assert(operations[0] instanceof SetInnerHtml);
@@ -162,13 +162,13 @@ describe("reren Component lifecycle tests", () => {
         });
 
         it("it should update the attributes if the attributes have changed", () => {
-            
+
             componentInstance.view = function updatedView() {
-                return new VElement("div", null, 
+                return new VElement("div", null,
                     new VElement("span", { id: "my_id" }, "some text"));
-            }
-            
-            componentInstance.updateComponent()
+            };
+
+            componentInstance.updateComponent();
 
             assert.equal(operations.length, 1);
             assert(operations[0] instanceof SetAttribute);
@@ -176,11 +176,11 @@ describe("reren Component lifecycle tests", () => {
         });
 
         it("it should remove the domcomponent if it is not present anymore", () => {
-            
+
             componentInstance.view = function updatedView() {
                 return new VElement("div");
-            }
-            
+            };
+
             componentInstance.updateComponent();
 
             assert.equal(operations.length, 1);
@@ -190,14 +190,13 @@ describe("reren Component lifecycle tests", () => {
             assert.equal(componentInstance._previousMountedDom.children.length, 0);
         });
     });
-    
-    describe("when mounted and changing with a nested rerenComponent in it", () => {
-        var controllerUpdateSpy = sinon.spy(), 
-            viewUpdateSpy = sinon.spy(), 
-            componentInstance,
-            nestedInstance;
 
-        var NestedComponent = ComponentFactory({
+    describe("when mounted and changing with a nested rerenComponent in it", () => {
+        var controllerUpdateSpy = sinon.spy(),
+            viewUpdateSpy = sinon.spy(),
+            componentInstance;
+
+        var NestedComponent = componentFactory({
             controller: function() {
                 this.onUpdate = (parentModel) => {
                     controllerUpdateSpy(parentModel);
@@ -212,13 +211,13 @@ describe("reren Component lifecycle tests", () => {
         beforeEach(() => {
             controllerUpdateSpy.reset();
             viewUpdateSpy.reset();
-            
-            var RootComponent = ComponentFactory({
+
+            var RootComponent = componentFactory({
                 view: () => {
                     return new VElement("div", null, new VElement(NestedComponent, { foo: "bar" }));
                 }
             });
-            
+
             componentInstance = new RootComponent();
             componentInstance.mount("1_1");
             operations = [];
@@ -237,7 +236,7 @@ describe("reren Component lifecycle tests", () => {
     });
 
     afterEach(() => {
-        if(stub) {
+        if (stub) {
             stub.restore();
         }
         operations = [];

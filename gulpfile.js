@@ -1,9 +1,18 @@
 var gulp = require('gulp');
+var jslint = require('gulp-jslint');
 var gulpUtil = require("gulp-util");
 var webpack = require('webpack');
+var eslint = require('gulp-eslint');
+
+gulp.task('eslint', function () {
+    return gulp.src([
+        './src/**/*.j*',
+        './__tests__/**/*.js'
+    ]).pipe(eslint())
+        .pipe(eslint.format());
+});
 
 gulp.task("compilejs", function() {
-
 
     var webpackConfig = {
         context: __dirname + "/src",
@@ -34,8 +43,12 @@ gulp.task("compilejs", function() {
             }));
         });
 });
+
 gulp.task("watch", function() {
-    gulp.watch("./src/**/*.js", ["compilejs"]);
+    gulp.watch([
+        "./src/**/*.js",
+        "./__tests__/**/*.js"
+    ], ["compilejs", "eslint"]);
 });
 
-gulp.task("default", ["compilejs", "watch"]);
+gulp.task("default", ["compilejs", "eslint", "watch"]);
