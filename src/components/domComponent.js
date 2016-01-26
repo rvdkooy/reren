@@ -95,6 +95,11 @@ class DomComponent extends DomComponentMountable {
     addChild(childComponentInstance) {
         this.children.push(childComponentInstance);
     }
+
+    removeChild(childComponentInstance) {
+        this.children.splice(this.children.indexOf(childComponentInstance), 1);
+        childComponentInstance.unmount();
+    }
 }
 
 module.exports = DomComponent;

@@ -237,6 +237,84 @@ describe("reren Component lifecycle tests", () => {
         });
     });
 
+    describe("when not using a mounted dom component anymore", () => {
+        var componentInstance;
+
+        beforeEach(() => {
+            var RootComponent = componentFactory({
+                view: () => {
+                    return new VElement("div", null, new VElement("h1"));
+                }
+            });
+
+            componentInstance = new RootComponent();
+            componentInstance.mount("1_1");
+            operations = [];
+
+            componentInstance.view = function updatedView() {
+                return new VElement("div", null, new VElement("h2"));
+            };
+
+            componentInstance.updateComponent();
+        });
+
+        it("it should unmount the previous component", () => {
+            assert.equal(operations.length, 2);
+            assert(operations[0] instanceof RemoveElement);
+            assert(operations[0].identifier, "1_1_1");
+            assert(operations[0].parentIdentifier, "1_1");
+
+            assert.equal(componentInstance._previousMountedDom.children.length, 1);
+            assert.equal(componentInstance._previousMountedDom.children[0].tagName, "h2");
+            assert(operations[1] instanceof InsertElement);
+            assert.equal(operations[1].tagName, "h2");
+        });
+    });
+
+    describe.skip("when not using a mounted component anymore", () => {
+        var controllerUnmountSpy = sinon.spy(),
+            componentInstance;
+
+        var NestedComponent = componentFactory({
+            controller: function() {
+                this.onUnmount = (parentModel) => {
+                    controllerUnmountSpy(parentModel);
+                };
+            },
+            view: () => {
+                return new VElement("span", null, "1");
+            }
+        });
+
+        beforeEach(() => {
+            controllerUnmountSpy.reset();
+
+            var RootComponent = componentFactory({
+                view: () => {
+                    return new VElement("div", null, new VElement(NestedComponent));
+                }
+            });
+
+            componentInstance = new RootComponent();
+            componentInstance.mount("1_1");
+            operations = [];
+
+            componentInstance.view = function updatedView() {
+                return new VElement("div", null,
+                    new VElement("span", null, "updated text"));
+            };
+
+            componentInstance.updateComponent();
+        });
+
+        it("it should unmount the previous component", () => {
+            assert(controllerUnmountSpy.calledOnce);
+        });
+        // it("it should update the view of the nested component", () => {
+        //     assert(viewUpdateSpy.calledTwice);
+        // });
+    });
+
     afterEach(() => {
         if (stub) {
             stub.restore();

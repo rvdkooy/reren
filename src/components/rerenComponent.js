@@ -2,23 +2,25 @@ var objectAssign = require('../utils/objectAssign');
 var DomComponent = require('./domComponent');
 
 var MountableRerenComponent = {
-    _previousMountedDom: {},
+    _previousMountedDom: null,
 
-    mount: function (identifier) {
+    mount: function(identifier) {
         this.identifier = identifier;
 
         var parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"));
         var rootElement = this.getView();
 
-        var mountedDom = this._parseElement(rootElement,
+        var newDom = this._parseElement(rootElement,
                             identifier,
                             parentIdentifier,
-                            this._previousMountedDom,
+                            null,
                             null);
 
-        this._previousMountedDom = mountedDom;
+        this._previousMountedDom = newDom;
     },
-
+    unmount: function() {
+        // unmounting lo
+    },
     updateComponent: function() {
         var parentIdentifier = this.identifier.substring(0, this.identifier.lastIndexOf("_"));
         var rootElement = this.getView();
@@ -46,7 +48,6 @@ var MountableRerenComponent = {
         if (element.children && element.children.length) {
 
             element.children.forEach((child, index) => {
-
                 this._parseElement(child,
                                     identifier + "_" + (index + 1),
                                     identifier,
@@ -56,23 +57,36 @@ var MountableRerenComponent = {
         }
     },
 
-    _parseElement: function (element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
+    _parseElement: function(element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
         var componentInstance = null;
 
         if (typeof element.type === "string") {
-
-            if (!previousComponentInstance || previousComponentInstance.tagName !== element.type) {
-
-                componentInstance = new DomComponent(element, parentIdentifier, identifier);
-                componentInstance.mount();
+            var mountNewDomComponent = (el, parentId, id) => {
+                var comp = new DomComponent(el, parentId, id);
+                comp.mount();
 
                 if (parentComponentInstance && parentComponentInstance.addChild) {
-                    parentComponentInstance.addChild(componentInstance);
+                    parentComponentInstance.addChild(comp);
                 }
 
+                return comp;
+            };
+
+            if (!previousComponentInstance) {
+
+                componentInstance = mountNewDomComponent(element, parentIdentifier, identifier);
+
             } else {
-                componentInstance = previousComponentInstance;
-                componentInstance.update(element);
+
+                if (previousComponentInstance.tagName !== element.type) {
+
+                    parentComponentInstance.removeChild(previousComponentInstance);
+                    componentInstance = mountNewDomComponent(element, parentIdentifier, identifier);
+                } else {
+
+                    componentInstance = previousComponentInstance;
+                    componentInstance.update(element);
+                }
             }
 
             this._handleDomComponentChildren(identifier, element, componentInstance);
@@ -92,6 +106,12 @@ var MountableRerenComponent = {
 
             } else {
                 componentInstance = previousComponentInstance;
+
+                 // if (other) {
+                //  componentInstance.unmount();
+                // } else {
+                //  update()
+                // }
 
                 componentInstance.onComponentUpdate(element.attributes);
                 componentInstance.updateComponent();
