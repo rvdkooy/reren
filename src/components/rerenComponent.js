@@ -19,7 +19,7 @@ var MountableRerenComponent = {
         this._previousMountedDom = newDom;
     },
     unmount: function() {
-        // unmounting lo
+        // unmounting logic here
     },
     updateComponent: function() {
         var parentIdentifier = this.identifier.substring(0, this.identifier.lastIndexOf("_"));
@@ -56,66 +56,84 @@ var MountableRerenComponent = {
             });
         }
     },
+    _handleDomComponent: function(element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
+        var domComponentInstance;
 
+        var mountNewDomComponent = (el, parentId, id) => {
+            var comp = new DomComponent(el, parentId, id);
+            comp.mount();
+
+            if (parentComponentInstance && parentComponentInstance.addChild) {
+                parentComponentInstance.addChild(comp);
+            }
+
+            return comp;
+        };
+
+        if (!previousComponentInstance) {
+
+            domComponentInstance = mountNewDomComponent(element, parentIdentifier, identifier);
+
+        } else {
+
+            if (previousComponentInstance.tagName !== element.type) {
+
+                parentComponentInstance.removeChild(previousComponentInstance);
+                domComponentInstance = mountNewDomComponent(element, parentIdentifier, identifier);
+            } else {
+
+                domComponentInstance = previousComponentInstance;
+                domComponentInstance.update(element);
+            }
+        }
+
+        this._handleDomComponentChildren(identifier, element, domComponentInstance);
+
+        return domComponentInstance;
+    },
+    _handleRerenComponent: function(element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
+        var rerenComponentInstance;
+        if (!previousComponentInstance) { // OR changed
+            var ComponentConstructor = element.type;
+            rerenComponentInstance = new ComponentConstructor();
+
+            rerenComponentInstance.onComponentMount(element.attributes);
+            rerenComponentInstance.mount(identifier);
+
+            if (parentComponentInstance && parentComponentInstance.addChild) {
+                parentComponentInstance.addChild(rerenComponentInstance);
+            }
+
+        } else {
+            rerenComponentInstance = previousComponentInstance;
+
+             // if (other) {
+            //  componentInstance.unmount();
+            // } else {
+            //  update()
+            // }
+
+            rerenComponentInstance.onComponentUpdate(element.attributes);
+            rerenComponentInstance.updateComponent();
+        }
+        return rerenComponentInstance;
+    },
     _parseElement: function(element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
         var componentInstance = null;
 
         if (typeof element.type === "string") {
-            var mountNewDomComponent = (el, parentId, id) => {
-                var comp = new DomComponent(el, parentId, id);
-                comp.mount();
-
-                if (parentComponentInstance && parentComponentInstance.addChild) {
-                    parentComponentInstance.addChild(comp);
-                }
-
-                return comp;
-            };
-
-            if (!previousComponentInstance) {
-
-                componentInstance = mountNewDomComponent(element, parentIdentifier, identifier);
-
-            } else {
-
-                if (previousComponentInstance.tagName !== element.type) {
-
-                    parentComponentInstance.removeChild(previousComponentInstance);
-                    componentInstance = mountNewDomComponent(element, parentIdentifier, identifier);
-                } else {
-
-                    componentInstance = previousComponentInstance;
-                    componentInstance.update(element);
-                }
-            }
-
-            this._handleDomComponentChildren(identifier, element, componentInstance);
+            componentInstance = this._handleDomComponent(element,
+                                                         identifier,
+                                                         parentIdentifier,
+                                                         previousComponentInstance,
+                                                         parentComponentInstance);
 
         } else if (typeof element.type === "function") {
-
-            if (!previousComponentInstance) { // OR changed
-                var ComponentConstructor = element.type;
-                componentInstance = new ComponentConstructor();
-
-                componentInstance.onComponentMount(element.attributes);
-                componentInstance.mount(identifier);
-
-                if (parentComponentInstance && parentComponentInstance.addChild) {
-                    parentComponentInstance.addChild(componentInstance);
-                }
-
-            } else {
-                componentInstance = previousComponentInstance;
-
-                 // if (other) {
-                //  componentInstance.unmount();
-                // } else {
-                //  update()
-                // }
-
-                componentInstance.onComponentUpdate(element.attributes);
-                componentInstance.updateComponent();
-            }
+            componentInstance = this._handleRerenComponent(element,
+                                                           identifier,
+                                                           parentIdentifier,
+                                                           previousComponentInstance,
+                                                           parentComponentInstance);
         }
 
         return componentInstance;
