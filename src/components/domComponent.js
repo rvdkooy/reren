@@ -2,6 +2,11 @@ var domOperations = require('../vdom/domOperations');
 var events = require('../htmlVariables').events;
 
 class DomComponentMountable {
+    constructor() {
+        this._registeredEventListeners = {};
+    }
+
+    _registeredEventListeners;
 
     mount() {
         domOperations.applyDomChanges(new domOperations.InsertElement(this.parentIdentifier,
@@ -23,6 +28,7 @@ class DomComponentMountable {
 
     _handleAttributes(attributes, mounting) {
         var domChanges = [];
+        attributes = attributes || {};
 
         var isEventListener = (property) => {
             for (var i = 0; i < events.length; i++) {
@@ -30,17 +36,38 @@ class DomComponentMountable {
             }
         };
 
-        for (var prop in attributes) {
-            if (!this.attributes || (this.attributes[prop] !== attributes[prop]) || mounting) {
+        for (var newProp in attributes) {
+            if (!this.attributes || (this.attributes[newProp] !== attributes[newProp]) || mounting) {
 
-                if (isEventListener(prop)) {
-                    domChanges.push(new domOperations.AddEventListener(this.identifier, prop, attributes[prop]));
+                if (isEventListener(newProp)) {
+                    domChanges.push(new domOperations.AddEventListener(this.identifier, newProp, attributes[newProp]));
 
-                } else if (prop === "classes") {
-                    domChanges.push(new domOperations.SetAttribute(this.identifier, "class", attributes[prop]));
+                    this._registeredEventListeners[newProp] = attributes[newProp];
+
+                } else if (newProp === "classes") {
+                    domChanges.push(new domOperations.SetAttribute(this.identifier, "class", attributes[newProp]));
 
                 } else {
-                    domChanges.push(new domOperations.SetAttribute(this.identifier, prop, attributes[prop]));
+                    domChanges.push(new domOperations.SetAttribute(this.identifier, newProp, attributes[newProp]));
+                }
+            }
+        }
+
+        for (var existingProp in this.attributes) {
+
+            if (!attributes[existingProp]) {
+                var attributeName = existingProp;
+
+                if (isEventListener(existingProp)) {
+                    console.log(this._registeredEventListeners);
+                    domChanges.push(new domOperations.RemoveEventListener(this.identifier, existingProp, this._registeredEventListeners[existingProp]));
+                    delete this._registeredEventListeners[existingProp];
+                } else {
+                    if (existingProp === "classes") {
+                        attributeName = "class";
+                    }
+
+                    domChanges.push(new domOperations.RemoveAttribute(this.identifier, attributeName));
                 }
             }
         }

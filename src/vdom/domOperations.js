@@ -71,8 +71,7 @@ class RemoveElement {
     }
 
     apply() {
-        var elementToRemove = documentHelpers.findElement(this.identifier);
-        documentHelpers.findElement(this.parentIdentifier).removeChild(elementToRemove);
+        documentHelpers.findElement(this.parentIdentifier).removeChild(documentHelpers.findElement(this.identifier));
     }
 }
 
@@ -84,8 +83,18 @@ class SetAttribute {
     }
 
     apply() {
-        var elementToChange = documentHelpers.findElement(this.identifier);
-        elementToChange.setAttribute(this.attributeName, this.attributeValue);
+        documentHelpers.findElement(this.identifier).setAttribute(this.attributeName, this.attributeValue);
+    }
+}
+
+class RemoveAttribute {
+    constructor(identifier, attributeName) {
+        this.identifier = identifier;
+        this.attributeName = attributeName;
+    }
+
+    apply() {
+        documentHelpers.findElement(this.identifier).removeAttribute(this.attributeName);
     }
 }
 
@@ -97,9 +106,21 @@ class AddEventListener {
     }
 
     apply() {
-        var element = documentHelpers.findElement(this.identifier);
         var shortEventName = this.eventName.toLowerCase().substring(2);
-        element.addEventListener(shortEventName, this.handler);
+        documentHelpers.findElement(this.identifier).addEventListener(shortEventName, this.handler);
+    }
+}
+
+class RemoveEventListener {
+    constructor(identifier, eventName, handler) {
+        this.identifier = identifier;
+        this.eventName = eventName;
+        this.handler = handler;
+    }
+
+    apply() {
+        var shortEventName = this.eventName.toLowerCase().substring(2);
+        documentHelpers.findElement(this.identifier).removeEventListener(shortEventName, this.handler);
     }
 }
 
@@ -111,6 +132,8 @@ module.exports = {
     InsertElement,
     RemoveElement,
     SetAttribute,
+    RemoveAttribute,
     SetInnerHtml,
-    AddEventListener
+    AddEventListener,
+    RemoveEventListener
 };

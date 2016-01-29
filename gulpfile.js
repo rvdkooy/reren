@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var jslint = require('gulp-jslint');
 var gulpUtil = require("gulp-util");
 var webpack = require('webpack');
 var eslint = require('gulp-eslint');

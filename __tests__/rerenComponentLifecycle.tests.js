@@ -34,14 +34,16 @@ describe("reren Component lifecycle tests", () => {
                 identifier: "1_1",
                 parentIdentifier: "1",
                 tagName: "div",
-                attributes: null,
+                attributes: {},
+                _registeredEventListeners: {},
                 children: [{
                     identifier: "1_1_1",
                     parentIdentifier: "1_1",
                     tagName: "span",
-                    attributes: null,
+                    attributes: {},
                     children: [],
-                    content: "some text"
+                    content: "some text",
+                    _registeredEventListeners: {}
                 }],
                 content: null
             });
@@ -89,7 +91,7 @@ describe("reren Component lifecycle tests", () => {
             assert.equal(componentInstance._previousMountedDom.identifier, "1_1");
             assert.equal(componentInstance._previousMountedDom.parentIdentifier, "1");
             assert.equal(componentInstance._previousMountedDom.tagName, "div");
-            assert.equal(componentInstance._previousMountedDom.attributes, null);
+            assert.deepEqual(componentInstance._previousMountedDom.attributes, {});
             assert.equal(componentInstance._previousMountedDom.content, null);
 
             assert.equal(componentInstance._previousMountedDom.children.length, 1);
