@@ -59,7 +59,6 @@ class DomComponentMountable {
                 var attributeName = existingProp;
 
                 if (isEventListener(existingProp)) {
-                    console.log(this._registeredEventListeners);
                     domChanges.push(new domOperations.RemoveEventListener(this.identifier, existingProp, this._registeredEventListeners[existingProp]));
                     delete this._registeredEventListeners[existingProp];
                 } else {

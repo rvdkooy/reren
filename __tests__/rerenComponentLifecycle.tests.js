@@ -310,9 +310,6 @@ describe("reren Component lifecycle tests", () => {
         it("it should unmount the previous component", () => {
             assert(controllerUnmountSpy.calledOnce);
         });
-        // it("it should update the view of the nested component", () => {
-        //     assert(viewUpdateSpy.calledTwice);
-        // });
     });
 
     afterEach(() => {

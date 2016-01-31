@@ -64,8 +64,6 @@ class SetInnerHtml {
  */
 class RemoveElement {
     constructor(parentIdentifier, identifier) {
-        // console.log(`removing element with id: ${identifier} from parent with id: ${parentIdentifier}`);
-
         this.parentIdentifier = parentIdentifier;
         this.identifier = identifier;
     }
