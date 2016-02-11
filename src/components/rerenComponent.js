@@ -4,42 +4,25 @@ var DomComponent = require('./domComponent');
 var MountableRerenComponent = {
     _previousMountedDom: null,
 
-
     mount: function(identifier) {
         this.identifier = identifier;
 
         var parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"));
         var rootElement = this.getView();
 
-        this._previousMountedDom = this._parseElement(rootElement,
-                                                        identifier,
-                                                        parentIdentifier,
-                                                        null,
-                                                        null);
-
+        this._previousMountedDom = this._parseVElement(rootElement, identifier, parentIdentifier);
     },
-
-
     unmount: function() {
         this.onComponentUnmount();
-        this._previousMountedDom.unmount(true)
+        this._previousMountedDom.unmount(true);
     },
-
-
     updateComponent: function() {
         var parentIdentifier = this.identifier.substring(0, this.identifier.lastIndexOf("_"));
         var rootElement = this.getView();
 
-        var newMountedDom = this._parseElement(rootElement,
-                            this.identifier,
-                            parentIdentifier,
-                            this._previousMountedDom,
-                            null);
-
-        this._previousMountedDom = newMountedDom;
+        this._previousMountedDom = this._parseVElement(rootElement, this.identifier,
+                                               parentIdentifier, this._previousMountedDom);
     },
-
-
     _handleDomComponentChildren: function(identifier, element, componentInstance) {
         // removing children
         if ((element.children && element.children.length === 0) && (
@@ -55,7 +38,7 @@ var MountableRerenComponent = {
         if (element.children && element.children.length) {
 
             element.children.forEach((child, index) => {
-                this._parseElement(child,
+                this._parseVElement(child,
                                     identifier + "_" + (index + 1),
                                     identifier,
                                     componentInstance.children[index],
@@ -63,109 +46,83 @@ var MountableRerenComponent = {
             });
         }
     },
-
-
-    _handleDomComponent: function(element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
+    _handleDomComponent: function(vElement, identifier, parentIdentifier, prevCompInstance, parentCompInstance) {
         var domComponentInstance;
 
         var mountNewDomComponent = (el, parentId, id) => {
             var domComponent = new DomComponent(el, parentId, id);
             domComponent.mount();
-
-            if (parentComponentInstance) {
-                parentComponentInstance.addChild(domComponent);
+            if (parentCompInstance) {
+                parentCompInstance.addChild(domComponent);
             }
 
             return domComponent;
         };
 
-        if (!previousComponentInstance) {
-
-            domComponentInstance = mountNewDomComponent(element, parentIdentifier, identifier);
-
+        if (!prevCompInstance) {
+            domComponentInstance = mountNewDomComponent(vElement, parentIdentifier, identifier);
         } else {
-
-            if (previousComponentInstance.tagName !== element.type) {
-
-                parentComponentInstance.removeChild(previousComponentInstance);
-
-                previousComponentInstance.unmount(true);
-
-                domComponentInstance = mountNewDomComponent(element, parentIdentifier, identifier);
+            if (prevCompInstance.tagName !== vElement.type) {
+                parentCompInstance.removeChild(prevCompInstance);
+                prevCompInstance.unmount(true);
+                domComponentInstance = mountNewDomComponent(vElement, parentIdentifier, identifier);
             } else {
-
-                domComponentInstance = previousComponentInstance;
-                domComponentInstance.update(element);
+                domComponentInstance = prevCompInstance;
+                domComponentInstance.update(vElement);
             }
         }
 
-        this._handleDomComponentChildren(identifier, element, domComponentInstance);
+        this._handleDomComponentChildren(identifier, vElement, domComponentInstance);
 
         return domComponentInstance;
     },
+    _handleRerenComponent: function(vElement, identifier, parentIdentifier, prevCompInstance, parentCompInstance) {
+        var reRenComponentInstance;
+        if (!prevCompInstance) {
+            var ComponentConstructor = vElement.type;
+            reRenComponentInstance = new ComponentConstructor();
+            reRenComponentInstance.onComponentMount(vElement.attributes);
+            reRenComponentInstance.mount(identifier);
 
-
-    _handleRerenComponent: function(element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
-        var rerenComponentInstance;
-        if (!previousComponentInstance) {
-            var ComponentConstructor = element.type;
-            rerenComponentInstance = new ComponentConstructor();
-
-            rerenComponentInstance.onComponentMount(element.attributes);
-            rerenComponentInstance.mount(identifier);
-
-            if (parentComponentInstance) {
-                parentComponentInstance.addChild(rerenComponentInstance);
+            if (parentCompInstance) {
+                parentCompInstance.addChild(reRenComponentInstance);
             }
 
         } else {
-            rerenComponentInstance = previousComponentInstance;
+            reRenComponentInstance = prevCompInstance;
              // if (other) {
             //  componentInstance.unmount();
             // } else {
             //  update()
             // }
 
-            rerenComponentInstance.onComponentUpdate(element.attributes);
-            rerenComponentInstance.updateComponent();
+            reRenComponentInstance.onComponentUpdate(vElement.attributes);
+            reRenComponentInstance.updateComponent();
         }
-        return rerenComponentInstance;
+        return reRenComponentInstance;
     },
-    _parseElement: function(element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
+    _parseVElement: function(vElement, identifier, parentIdentifier, prevCompInstance, parentCompInstance) {
         var componentInstance = null;
 
-        if (typeof element.type === "string") {
-            componentInstance = this._handleDomComponent(element,
-                                                         identifier,
-                                                         parentIdentifier,
-                                                         previousComponentInstance,
-                                                         parentComponentInstance);
+        if (typeof vElement.type === "string") {
+            componentInstance = this._handleDomComponent(vElement, identifier, parentIdentifier,
+                                                         prevCompInstance, parentCompInstance);
 
-        } else if (typeof element.type === "function") {
-            componentInstance = this._handleRerenComponent(element,
-                                                           identifier,
-                                                           parentIdentifier,
-                                                           previousComponentInstance,
-                                                           parentComponentInstance);
+        } else if (typeof vElement.type === "function") {
+            componentInstance = this._handleRerenComponent(vElement, identifier, parentIdentifier,
+                                                           prevCompInstance, parentCompInstance);
         }
 
         return componentInstance;
     }
 };
 
-/**
- * Base class for a Reren controller
- * every controller will be extended by this BaseController
- * so that it will have functions like "setViewModel()" and "update()"
- */
 class BaseController {
     constructor(update) {
         this.update = update;
         //this.onUpdate = function(){ };
         this.model = {};
     }
-
-    //onUpdate;
 
     update;
 }
@@ -181,6 +138,7 @@ var componentFactory = function(definition) {
     function RerenComponent() {
 
         var init = () => {
+
             if (!this.view) {
                 throw new Error("A component should always have a view!");
             }

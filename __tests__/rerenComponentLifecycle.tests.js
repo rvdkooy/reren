@@ -7,10 +7,16 @@ var { componentFactory } = require('../src/components/rerenComponent.js');
 
 describe("reren Component lifecycle tests", () => {
 
-    var operations = [], stub;
+    var operations, stub;
+
+    var interceptOperations = () => {
+        operations.intercept = true;
+    };
 
     beforeEach(() => {
+        operations = [];
         stub = sinon.stub(domOperations, "applyDomChanges", (operation) => {
+            if (!operations.intercept) return;
             operations.push(operation);
         });
     });
@@ -18,11 +24,9 @@ describe("reren Component lifecycle tests", () => {
     describe("when mounting with a single rerenComponent", () => {
         var componentInstance;
         beforeEach(() => {
+            interceptOperations();
             var Component = componentFactory({
-                view: () => {
-                    return new VElement("div", null,
-                        new VElement("span", null, "some text"));
-                }
+                view: () => new VElement("div", null, new VElement("span", null, "some text"))
             });
 
             componentInstance = new Component();
@@ -64,23 +68,17 @@ describe("reren Component lifecycle tests", () => {
         var NestedComponent;
 
         beforeEach(() => {
+            interceptOperations();
             onMountSpy.reset();
             NestedComponent = componentFactory({
                 controller: function() {
-                    this.onMount = (parentModal) => {
-                        onMountSpy(parentModal);
-                    };
+                    this.onMount = (parentModal) => onMountSpy(parentModal);
                 },
-                view: () => {
-                    return new VElement("span", null, "some text");
-                }
+                view: () => new VElement("span", null, "some text")
             });
 
             var Component = componentFactory({
-                view: () => {
-                    return new VElement("div", null,
-                        new VElement(NestedComponent, { foo: "bar" }));
-                }
+                view: () => new VElement("div", null, new VElement(NestedComponent, { foo: "bar" }))
             });
 
             componentInstance = new Component();
@@ -118,15 +116,12 @@ describe("reren Component lifecycle tests", () => {
 
         it("it should not do anything", () => {
             var Component = componentFactory({
-                view: () => {
-                    return new VElement("div", null,
-                        new VElement("span", null, "some text"));
-                }
+                view: () => new VElement("div", null, new VElement("span", null, "some text"))
             });
 
             var componentInstance = new Component();
             componentInstance.mount("1_1");
-            operations = [];
+            interceptOperations();
 
             componentInstance.updateComponent();
             assert.equal(operations.length, 0);
@@ -146,7 +141,7 @@ describe("reren Component lifecycle tests", () => {
 
             componentInstance = new Component();
             componentInstance.mount("1_1");
-            operations = [];
+            interceptOperations();
         });
 
         it("it should update the innerHtml if the content has changed", () => {
@@ -179,10 +174,7 @@ describe("reren Component lifecycle tests", () => {
 
         it("it should remove the domcomponent if it is not present anymore", () => {
 
-            componentInstance.view = function updatedView() {
-                return new VElement("div");
-            };
-
+            componentInstance.view = () => new VElement("div");
             componentInstance.updateComponent();
 
             assert.equal(operations.length, 1);
@@ -200,9 +192,7 @@ describe("reren Component lifecycle tests", () => {
 
         var NestedComponent = componentFactory({
             controller: function() {
-                this.onUpdate = (parentModel) => {
-                    controllerUpdateSpy(parentModel);
-                };
+                this.onUpdate = (parentModel) => controllerUpdateSpy(parentModel);
             },
             view: () => {
                 viewUpdateSpy();
@@ -215,14 +205,12 @@ describe("reren Component lifecycle tests", () => {
             viewUpdateSpy.reset();
 
             var RootComponent = componentFactory({
-                view: () => {
-                    return new VElement("div", null, new VElement(NestedComponent, { foo: "bar" }));
-                }
+                view: () => new VElement("div", null, new VElement(NestedComponent, { foo: "bar" }))
             });
 
             componentInstance = new RootComponent();
             componentInstance.mount("1_1");
-            operations = [];
+            interceptOperations();
 
             componentInstance.updateComponent();
         });
@@ -242,19 +230,14 @@ describe("reren Component lifecycle tests", () => {
 
         beforeEach(() => {
             var RootComponent = componentFactory({
-                view: () => {
-                    return new VElement("div", null, new VElement("h1"));
-                }
+                view: () => new VElement("div", null, new VElement("h1"))
             });
 
             componentInstance = new RootComponent();
             componentInstance.mount("1_1");
-            operations = [];
+            interceptOperations();
 
-            componentInstance.view = function updatedView() {
-                return new VElement("div", null, new VElement("h2"));
-            };
-
+            componentInstance.view = () => new VElement("div", null, new VElement("h2"));
             componentInstance.updateComponent();
         });
 
@@ -278,24 +261,16 @@ describe("reren Component lifecycle tests", () => {
 
         var NestedComponentTwo = componentFactory({
             controller: function() {
-                this.onUnmount = () => {
-                    secondControllerUnmountSpy();
-                };
+                this.onUnmount = () => secondControllerUnmountSpy();
             },
-            view: () => {
-                return new VElement("div", null, "second nested component");
-            }
+            view: () => new VElement("div", null, "second nested component")
         });
 
         var NestedComponentOne = componentFactory({
             controller: function() {
-                this.onUnmount = () => {
-                    firstControllerUnmountSpy();
-                };
+                this.onUnmount = () => firstControllerUnmountSpy();
             },
-            view: () => {
-                return new VElement("span", null, new VElement(NestedComponentTwo));
-            }
+            view: () => new VElement("span", null, new VElement(NestedComponentTwo))
         });
 
         beforeEach(() => {
@@ -303,20 +278,14 @@ describe("reren Component lifecycle tests", () => {
             secondControllerUnmountSpy.reset();
 
             var RootComponent = componentFactory({
-                view: () => {
-                    return new VElement("div", null, new VElement(NestedComponentOne));
-                }
+                view: () => new VElement("div", null, new VElement(NestedComponentOne))
             });
 
             componentInstance = new RootComponent();
             componentInstance.mount("1_1");
-            operations = [];
+            interceptOperations();
 
-            componentInstance.view = function updatedView() {
-                return new VElement("div", null,
-                    new VElement("span", null, "updated text"));
-            };
-
+            componentInstance.view = () => new VElement("div", null, new VElement("span", null, "updated text"));
             componentInstance.updateComponent();
         });
 
@@ -333,6 +302,6 @@ describe("reren Component lifecycle tests", () => {
         if (stub) {
             stub.restore();
         }
-        operations = [];
+        interceptOperations();
     });
 });

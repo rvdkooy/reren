@@ -5,10 +5,16 @@ var domOperations = require('../src/vdom/domOperations');
 var DomComponent = require('../src/components/domComponent');
 
 describe('domComponent tests', () => {
-    var defaultParentIdentifier = "1", defaultIdentifier = "1_1", operations = [], stub;
+    var defaultParentIdentifier = "1", defaultIdentifier = "1_1", operations, stub;
+
+    var interceptOperations = () => {
+        operations.intercept = true;
+    };
 
     beforeEach(() => {
+        operations = [];
         stub = sinon.stub(domOperations, "applyDomChanges", (operation) => {
+            if (!operations.intercept) return;
             operations.push(operation);
         });
     });
@@ -16,11 +22,9 @@ describe('domComponent tests', () => {
     it('it should create a new element with inner html', () => {
 
         var elementDefinition = new VElement("div", { classes: "myclass", onClick: function() {} }, "innerhtml" );
+        interceptOperations();
 
-        var domComponent = new DomComponent(elementDefinition,
-                                            defaultParentIdentifier,
-                                            defaultIdentifier);
-
+        var domComponent = new DomComponent(elementDefinition, defaultParentIdentifier, defaultIdentifier);
         domComponent.mount();
 
         assert.equal(operations.length, 3);
@@ -48,7 +52,7 @@ describe('domComponent tests', () => {
         var domComponent = new DomComponent(initialElement,
                                             defaultParentIdentifier,
                                             defaultIdentifier);
-
+        interceptOperations();
         domComponent.update(updatedElement);
 
         assert.equal(operations.length, 1);
@@ -66,7 +70,7 @@ describe('domComponent tests', () => {
         var domComponent = new DomComponent(initialElement,
                                             defaultParentIdentifier,
                                             defaultIdentifier);
-
+        interceptOperations();
         domComponent.update(updatedElement);
 
         assert.equal(operations.length, 1);
@@ -83,7 +87,7 @@ describe('domComponent tests', () => {
         var domComponent = new DomComponent(initialElement,
                                             defaultParentIdentifier,
                                             defaultIdentifier);
-
+        interceptOperations();
         domComponent.update(updatedElement);
 
         assert.equal(operations.length, 1);
@@ -100,7 +104,7 @@ describe('domComponent tests', () => {
         var domComponent = new DomComponent(initialElement,
                                             defaultParentIdentifier,
                                             defaultIdentifier);
-
+        interceptOperations();
         domComponent.update(updatedElement);
 
         assert.equal(operations.length, 1);
@@ -120,7 +124,7 @@ describe('domComponent tests', () => {
                                             defaultParentIdentifier,
                                             defaultIdentifier);
         domComponent.mount();
-        operations = [];
+        interceptOperations();
         domComponent.update(updatedElement);
 
         assert.equal(operations.length, 1);
@@ -141,7 +145,7 @@ describe('domComponent tests', () => {
                                             defaultIdentifier);
 
         domComponent.addChild(new DomComponent(new VElement("span"), "ignore", "ignore"));
-
+        interceptOperations();
         domComponent.unmount(true);
 
         assert.equal(operations.length, 1);
