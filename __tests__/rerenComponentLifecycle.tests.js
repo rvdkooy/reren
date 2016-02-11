@@ -271,27 +271,40 @@ describe("reren Component lifecycle tests", () => {
         });
     });
 
-    describe.skip("when not using a mounted component anymore", () => {
-        var controllerUnmountSpy = sinon.spy(),
+    describe("when not using nested mounted components anymore", () => {
+        var firstControllerUnmountSpy = sinon.spy(),
+            secondControllerUnmountSpy = sinon.spy(),
             componentInstance;
 
-        var NestedComponent = componentFactory({
+        var NestedComponentTwo = componentFactory({
             controller: function() {
-                this.onUnmount = (parentModel) => {
-                    controllerUnmountSpy(parentModel);
+                this.onUnmount = () => {
+                    secondControllerUnmountSpy();
                 };
             },
             view: () => {
-                return new VElement("span", null, "1");
+                return new VElement("div", null, "second nested component");
+            }
+        });
+
+        var NestedComponentOne = componentFactory({
+            controller: function() {
+                this.onUnmount = () => {
+                    firstControllerUnmountSpy();
+                };
+            },
+            view: () => {
+                return new VElement("span", null, new VElement(NestedComponentTwo));
             }
         });
 
         beforeEach(() => {
-            controllerUnmountSpy.reset();
+            firstControllerUnmountSpy.reset();
+            secondControllerUnmountSpy.reset();
 
             var RootComponent = componentFactory({
                 view: () => {
-                    return new VElement("div", null, new VElement(NestedComponent));
+                    return new VElement("div", null, new VElement(NestedComponentOne));
                 }
             });
 
@@ -307,8 +320,12 @@ describe("reren Component lifecycle tests", () => {
             componentInstance.updateComponent();
         });
 
-        it("it should unmount the previous component", () => {
-            assert(controllerUnmountSpy.calledOnce);
+        it("it should unmount the first nested reren component", () => {
+            assert(firstControllerUnmountSpy.calledOnce);
+        });
+
+        it("it should unmount the second nested reren component", () => {
+            assert(secondControllerUnmountSpy.calledOnce);
         });
     });
 

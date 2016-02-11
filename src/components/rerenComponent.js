@@ -4,23 +4,28 @@ var DomComponent = require('./domComponent');
 var MountableRerenComponent = {
     _previousMountedDom: null,
 
+
     mount: function(identifier) {
         this.identifier = identifier;
 
         var parentIdentifier = identifier.substring(0, identifier.lastIndexOf("_"));
         var rootElement = this.getView();
 
-        var newDom = this._parseElement(rootElement,
-                            identifier,
-                            parentIdentifier,
-                            null,
-                            null);
+        this._previousMountedDom = this._parseElement(rootElement,
+                                                        identifier,
+                                                        parentIdentifier,
+                                                        null,
+                                                        null);
 
-        this._previousMountedDom = newDom;
     },
+
+
     unmount: function() {
-        // unmounting logic here
+        this.onComponentUnmount();
+        this._previousMountedDom.unmount(true)
     },
+
+
     updateComponent: function() {
         var parentIdentifier = this.identifier.substring(0, this.identifier.lastIndexOf("_"));
         var rootElement = this.getView();
@@ -33,6 +38,8 @@ var MountableRerenComponent = {
 
         this._previousMountedDom = newMountedDom;
     },
+
+
     _handleDomComponentChildren: function(identifier, element, componentInstance) {
         // removing children
         if ((element.children && element.children.length === 0) && (
@@ -40,7 +47,7 @@ var MountableRerenComponent = {
 
             for (var i = 0; i < componentInstance.children.length; i++) {
                 var childrenToRemove = componentInstance.children.splice(i);
-                childrenToRemove.forEach(x => x.unmount());
+                childrenToRemove.forEach(x => x.unmount(true));
             }
         }
 
@@ -56,18 +63,20 @@ var MountableRerenComponent = {
             });
         }
     },
+
+
     _handleDomComponent: function(element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
         var domComponentInstance;
 
         var mountNewDomComponent = (el, parentId, id) => {
-            var comp = new DomComponent(el, parentId, id);
-            comp.mount();
+            var domComponent = new DomComponent(el, parentId, id);
+            domComponent.mount();
 
-            if (parentComponentInstance && parentComponentInstance.addChild) {
-                parentComponentInstance.addChild(comp);
+            if (parentComponentInstance) {
+                parentComponentInstance.addChild(domComponent);
             }
 
-            return comp;
+            return domComponent;
         };
 
         if (!previousComponentInstance) {
@@ -79,6 +88,9 @@ var MountableRerenComponent = {
             if (previousComponentInstance.tagName !== element.type) {
 
                 parentComponentInstance.removeChild(previousComponentInstance);
+
+                previousComponentInstance.unmount(true);
+
                 domComponentInstance = mountNewDomComponent(element, parentIdentifier, identifier);
             } else {
 
@@ -91,22 +103,23 @@ var MountableRerenComponent = {
 
         return domComponentInstance;
     },
+
+
     _handleRerenComponent: function(element, identifier, parentIdentifier, previousComponentInstance, parentComponentInstance) {
         var rerenComponentInstance;
-        if (!previousComponentInstance) { // OR changed
+        if (!previousComponentInstance) {
             var ComponentConstructor = element.type;
             rerenComponentInstance = new ComponentConstructor();
 
             rerenComponentInstance.onComponentMount(element.attributes);
             rerenComponentInstance.mount(identifier);
 
-            if (parentComponentInstance && parentComponentInstance.addChild) {
+            if (parentComponentInstance) {
                 parentComponentInstance.addChild(rerenComponentInstance);
             }
 
         } else {
             rerenComponentInstance = previousComponentInstance;
-
              // if (other) {
             //  componentInstance.unmount();
             // } else {
@@ -199,6 +212,12 @@ var componentFactory = function(definition) {
         this.onComponentUpdate = (parentModel) => {
             if (this._controllerInstance && this._controllerInstance.onUpdate) {
                 this._controllerInstance.onUpdate(parentModel);
+            }
+        };
+
+        this.onComponentUnmount = () => {
+            if (this._controllerInstance && this._controllerInstance.onUnmount) {
+                this._controllerInstance.onUnmount();
             }
         };
 

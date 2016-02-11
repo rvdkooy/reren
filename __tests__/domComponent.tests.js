@@ -133,13 +133,16 @@ describe('domComponent tests', () => {
 
     it('it should remove the element when unmounted', () => {
 
-        var initialElement = new VElement("div", null, "foo");
+        var initialElement = new VElement("div");
+
 
         var domComponent = new DomComponent(initialElement,
                                             defaultParentIdentifier,
                                             defaultIdentifier);
 
-        domComponent.unmount();
+        domComponent.addChild(new DomComponent(new VElement("span"), "ignore", "ignore"));
+
+        domComponent.unmount(true);
 
         assert.equal(operations.length, 1);
         assert.equal(operations[0] instanceof domOperations.RemoveElement, true);

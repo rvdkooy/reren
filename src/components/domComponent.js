@@ -5,7 +5,6 @@ class DomComponentMountable {
     constructor() {
         this._registeredEventListeners = {};
     }
-
     _registeredEventListeners;
 
     mount() {
@@ -75,8 +74,11 @@ class DomComponentMountable {
         domChanges.forEach(c => domOperations.applyDomChanges(c));
     }
 
-    unmount() {
-        domOperations.applyDomChanges(new domOperations.RemoveElement(this.parentIdentifier, this.identifier));
+    unmount(isRoot) {
+        if (isRoot) {
+            domOperations.applyDomChanges(new domOperations.RemoveElement(this.parentIdentifier, this.identifier));
+        }
+        this.children.forEach(c => c.unmount());
     }
 }
 
@@ -97,7 +99,6 @@ class DomComponent extends DomComponentMountable {
 
     removeChild(childComponentInstance) {
         this.children.splice(this.children.indexOf(childComponentInstance), 1);
-        childComponentInstance.unmount();
     }
 }
 
