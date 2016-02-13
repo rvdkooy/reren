@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/rvdkooy/reren.svg?branch=master)](https://travis-ci.org/rvdkooy/reren)
 
 # reren
-A simple javascript viewengine inspired by React, Angular and KnockoutJs
+A simple javascript viewengine inspired by viewengines like React, Angular and KnockoutJs
 
 Example/Idea:
 
@@ -63,7 +63,7 @@ The view will be injected with the model from the controller (if the controller 
 ```
 
 #### VElements
-VElement can be used in the following ways:
+VElements are used to define your (virtual) DOM and they can be used in the following ways:
 
 ``` javascript
 // default api: new VElement(tagName, attributes, children || content);
@@ -82,12 +82,6 @@ new VElement(NestedComponent, model);
 
 ```
 
-## concepts
-- Every component has at least a view (controller is not mandatory).
-- Components can be constructed with other components.
-- A view can have a viewmodel which is provided by the controller
-- No DOM operations needed, reren uses a virtual dom to compare changes and will apply them to the real DOM
-
 
 ### Todo's
 - [x] Reconize changes in attributes in vdom and apply them to the real dom
@@ -95,7 +89,7 @@ new VElement(NestedComponent, model);
 - [x] Only update components that really changed (instead of comparing the whole vdom)
 - [x] Implement more events (instead of only onClick)
 - [x] Communication between components (eg: props)
-- [ ] cleaning up components (unmounting them) and event handlers
+- [x] cleaning up components (unmounting them) and event handlers
 
 ### Idea's
 - [ ] Dependency injection (registering and injecting them into a controller)
