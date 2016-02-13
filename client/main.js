@@ -77,11 +77,11 @@
                     self.model.data.push({ name: "Ronald van der Kooij " + (i+1) });
                 };
                 self.update();
-            },
+            };
             this.model.onClearDataButtonClicked = function() {
                 self.model.data = [];
                 self.update();
-            }
+            };
         },
         view: function(model) {
             var rows = model.data.map((d) => {
@@ -155,7 +155,7 @@
                 R.element(ListComponent)
             ]);
         }
-    })
+    });
     
     var SimpleComponent = R.component({
         controller: function() {
@@ -172,7 +172,7 @@
                 R.span(null, "some text " + model.timer)
             ]);
         }
-    })
+    });
 
     R.start(R.element(RootComponent), document.getElementById('container'));
 

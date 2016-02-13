@@ -81,20 +81,3 @@ R.div({ my_id }, R.span(null, "some text"));
 new VElement(NestedComponent, model);
 
 ```
-
-
-### Todo's
-- [x] Reconize changes in attributes in vdom and apply them to the real dom
-- [ ] Implement changes in lists by using a unique key (like react)
-- [x] Only update components that really changed (instead of comparing the whole vdom)
-- [x] Implement more events (instead of only onClick)
-- [x] Communication between components (eg: props)
-- [x] cleaning up components (unmounting them) and event handlers
-
-### Idea's
-- [ ] Dependency injection (registering and injecting them into a controller)
-- [ ] auto update of components
-
-
-
-

@@ -152,8 +152,7 @@ var componentFactory = function(definition) {
                 this.controller.prototype = new BaseController(this.updateComponent.bind(this));
                 this.controller.constructor = this.controller;
                 var ControllerConstructor = this.controller;
-                var ctrl = new ControllerConstructor();
-                this._controllerInstance = ctrl;
+                this._controllerInstance = new ControllerConstructor();;
             }
         };
 
