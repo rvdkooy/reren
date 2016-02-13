@@ -78,26 +78,32 @@ var MountableRerenComponent = {
     },
     _handleRerenComponent: function(vElement, identifier, parentIdentifier, prevCompInstance, parentCompInstance) {
         var reRenComponentInstance;
-        if (!prevCompInstance) {
-            var ComponentConstructor = vElement.type;
-            reRenComponentInstance = new ComponentConstructor();
-            reRenComponentInstance.onComponentMount(vElement.attributes);
-            reRenComponentInstance.mount(identifier);
 
-            if (parentCompInstance) {
-                parentCompInstance.addChild(reRenComponentInstance);
+        var mountRerenComponent = (el, id, parent) => {
+            var ComponentConstructor = el.type;
+            var rerenComponent = new ComponentConstructor();
+            rerenComponent.onComponentMount(el.attributes);
+            rerenComponent.mount(id);
+
+            if (parent && parent.addChild) {
+                parent.addChild(rerenComponent);
             }
 
+            return rerenComponent;
+        };
+        if (!prevCompInstance) {
+            reRenComponentInstance = mountRerenComponent(vElement, identifier, parentCompInstance);
         } else {
-            reRenComponentInstance = prevCompInstance;
-             // if (other) {
-            //  componentInstance.unmount();
-            // } else {
-            //  update()
-            // }
-
-            reRenComponentInstance.onComponentUpdate(vElement.attributes);
-            reRenComponentInstance.updateComponent();
+            if (prevCompInstance instanceof vElement.type) {
+                reRenComponentInstance = prevCompInstance;
+                reRenComponentInstance.onComponentUpdate(vElement.attributes);
+                reRenComponentInstance.updateComponent();
+            } else {
+                prevCompInstance.unmount();
+                prevCompInstance = null;
+                console.log(vElement.attributes);
+                reRenComponentInstance = mountRerenComponent(vElement, identifier, parentCompInstance);
+            }
         }
         return reRenComponentInstance;
     },

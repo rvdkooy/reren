@@ -298,6 +298,49 @@ describe("reren Component lifecycle tests", () => {
         });
     });
 
+    describe("when replacing a nested reren component with another reren component", () => {
+        var controllerUnmountSpy = sinon.spy(),
+            controllerMountSpy = sinon.spy();
+
+        var NestedComponentOne = componentFactory({
+            controller: function() {
+                this.onUnmount = () => controllerUnmountSpy();
+            },
+            view: () => new VElement("span", null, "first nested component")
+        });
+
+        var NestedComponentTwo = componentFactory({
+            controller: function() {
+                this.onMount = () => controllerMountSpy();
+            },
+            view: () => new VElement("div", null, "second nested component")
+        });
+
+        beforeEach(() => {
+            controllerUnmountSpy.reset();
+            controllerMountSpy.reset();
+
+            var RootComponent = componentFactory({
+                view: () => new VElement("div", null, new VElement(NestedComponentOne))
+            });
+
+            var componentInstance = new RootComponent();
+            componentInstance.mount("1_1");
+            interceptOperations();
+
+            componentInstance.view = () => new VElement("div", null, new VElement(NestedComponentTwo));
+            componentInstance.updateComponent();
+        });
+
+        it("it should unmount the previous nested reren component", () => {
+            assert(controllerUnmountSpy.calledOnce);
+        });
+
+        it("it should mount the new nested reren component", () => {
+            assert(controllerMountSpy.calledOnce);
+        });
+    });
+
     afterEach(() => {
         if (stub) {
             stub.restore();
