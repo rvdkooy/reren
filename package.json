@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha  --require babel-core/register ./__tests__/*.tests.js",
-    "test-watch": "node ./node_modules/mocha/bin/mocha  --require babel-core/register ./__tests__/*.tests.js -w"
+    "test-watch": "node ./node_modules/mocha/bin/mocha  --require babel-core/register ./__tests__/*.tests.js -w",
+    "prepublish": "webpack"
   },
   "repository": {
     "type": "git",
