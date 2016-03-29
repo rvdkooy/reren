@@ -2,7 +2,7 @@
   "name": "reren",
   "version": "0.0.4",
   "description": "A javascript viewengine",
-  "main": "index.js",
+  "main": "dist/reren.js",
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha  --require babel-core/register ./__tests__/*.tests.js",
     "test-watch": "node ./node_modules/mocha/bin/mocha  --require babel-core/register ./__tests__/*.tests.js -w",
