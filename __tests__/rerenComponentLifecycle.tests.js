@@ -185,6 +185,74 @@ describe("reren Component lifecycle tests", () => {
         });
     });
 
+    describe("when mounted and changing the children", () => {
+        var componentInstance;
+
+        var mountAndInterceptOperations = (viewResult) => {
+            var Component = componentFactory({
+                view: () => {
+                    return viewResult;
+                }
+            });
+
+            componentInstance = new Component();
+            componentInstance.mount("1_1");
+            interceptOperations();
+        }
+
+        it("it should add children when there are children added", () => {
+
+            mountAndInterceptOperations(new VElement("ul"));
+            
+            componentInstance.view = function updatedView() {
+                return new VElement("ul", null, [
+                    new VElement("li", null, "1"),
+                    new VElement("li", null, "2")
+                ]);
+            };
+
+            componentInstance.updateComponent();
+
+            assert.equal(operations.length, 2);
+            assert(operations[0] instanceof InsertElement);
+            assert.equal(operations[0].tagName, "li");
+            assert(operations[1] instanceof InsertElement);
+            assert.equal(operations[1].tagName, "li");
+            assert.equal(componentInstance._previousMountedDom.children[0].content, "1");
+            assert.equal(componentInstance._previousMountedDom.children[1].content, "2");
+        });
+
+        it("it should remove children when there are children removed", () => {
+
+            mountAndInterceptOperations(new VElement("ul", null, [
+                new VElement("li", null, "1"),
+                new VElement("li", null, "2")
+            ]));
+            
+            componentInstance.view = function updatedView() {
+                return new VElement("ul", null, [
+                    new VElement("li", null, "2")
+                ]);
+            };
+
+            componentInstance.updateComponent();
+            assert.equal(operations.length, 3);
+            assert(operations[0] instanceof RemoveElement);
+            assert.equal(operations[0].identifier, "1_1_1");
+            assert.equal(operations[0].parentIdentifier, "1_1");
+
+            assert(operations[1] instanceof RemoveElement);
+            assert.equal(operations[1].identifier, "1_1_2");
+            assert.equal(operations[1].parentIdentifier, "1_1");
+
+            assert(operations[2] instanceof InsertElement);
+            assert.equal(operations[2].tagName, "li");
+            assert.equal(operations[2].innerHtml, "2");
+            
+            assert.equal(componentInstance._previousMountedDom.children[0].content, "2");
+        });
+    });
+
     describe("when mounted and changing with a nested rerenComponent in it", () => {
         var controllerUpdateSpy = sinon.spy(),
             viewUpdateSpy = sinon.spy(),

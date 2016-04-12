@@ -24,13 +24,15 @@ var MountableRerenComponent = {
                                                parentIdentifier, this._previousMountedDom);
     },
     _handleDomComponentChildren: function(identifier, element, componentInstance) {
-        // removing children
-        if ((element.children && element.children.length === 0) && (
-            componentInstance.children && componentInstance.children.length > 0)) {
-
-            for (var i = 0; i < componentInstance.children.length; i++) {
-                var childrenToRemove = componentInstance.children.splice(i);
-                childrenToRemove.forEach(x => x.unmount(true));
+        
+        if (element.children && componentInstance.children) {
+            // removing children
+            if ((element.children.length === 0 && componentInstance.children.length > 0) ||
+                componentInstance.children.length > element.children.length) {
+                for (var i = 0; i < componentInstance.children.length; i++) {
+                    var childrenToRemove = componentInstance.children.splice(i);
+                    childrenToRemove.forEach(x => x.unmount(true));
+                }
             }
         }
 
@@ -58,7 +60,6 @@ var MountableRerenComponent = {
 
             return domComponent;
         };
-
         if (!prevCompInstance) {
             domComponentInstance = mountNewDomComponent(vElement, parentIdentifier, identifier);
         } else {
