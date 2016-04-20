@@ -3,7 +3,7 @@
  * source: https://developer.mozilla.org/en-US/docs/Web/HTML/Element
  */
 module.exports.elements = [
-    "article", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6",
+    "a", "article", "footer", "header", "h1", "h2", "h3", "h4", "h5", "h6",
     "hgroup", "nav", "section", "dd", "div", "dl", "figcaption", "figure",
     "hr", "li", "main", "ol", "p", "pre", "ul", "abbr", "b", "bdi", "bdo",
     "br", "cite", "code", "data", "dfn", "em", "i", "kbd", "mark", "q",
