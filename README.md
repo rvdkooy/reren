@@ -49,7 +49,6 @@ var MyComponent = R.component({
 
 | Method        | Description                                                                       |               
 | ------------- |-----------------------------------------------------------------------------------|
-| this.onMount  | Called when mounting the component for the first time                             |
 | this.onUpdate | Called when the component is updated by it's parent component                     |
 | this.model    | A controller always has a model object available that will be passed to it's view |
 | this.update   | When called, will trigger the view to rerender again (Will also notify child components 'onUpdate')|
