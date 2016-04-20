@@ -104,6 +104,7 @@ describe('domComponent tests', () => {
         var domComponent = new DomComponent(initialElement,
                                             defaultParentIdentifier,
                                             defaultIdentifier);
+        domComponent.mount();
         interceptOperations();
         domComponent.update(updatedElement);
 
@@ -133,6 +134,23 @@ describe('domComponent tests', () => {
         assert.equal(operations[0].eventName, "onClick");
         assert.equal(operations[0].handler, eventListener);
         assert.deepEqual(domComponent._registeredEventListeners, {});
+    });
+
+    it('it should not remove an eventlistener based on a function comparison', () => {
+        var eventListenerOne = () => {};
+        var eventListenerTwo = () => {};
+        var initialElement = new VElement("div", { onClick: eventListenerOne }, null);
+        var updatedElement = new VElement("div", { onClick: eventListenerTwo }, null);
+
+        var domComponent = new DomComponent(initialElement,
+            defaultParentIdentifier,
+            defaultIdentifier);
+        domComponent.mount();
+        interceptOperations();
+        domComponent.update(updatedElement);
+
+        assert.equal(operations.length, 0);
+        assert.equal(domComponent._registeredEventListeners.onClick, eventListenerOne);
     });
 
     it('it should remove the element when unmounted', () => {

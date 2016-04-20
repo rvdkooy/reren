@@ -26,7 +26,6 @@ module.exports.start = (rootComponent, rootNode) => {
     var RootComponent = rootComponent.type;
     var rootInstance = new RootComponent();
 
-    rootInstance.onComponentMount({});
     rootInstance.mount(variables.ROOT_IDENTIFIER + "_1");
 };
 

@@ -12,7 +12,6 @@ class DomComponentMountable {
                                             this.identifier,
                                             this.tagName,
                                             this.content));
-
         this._handleAttributes(this.attributes, true);
     }
 
@@ -39,10 +38,11 @@ class DomComponentMountable {
             if (!this.attributes || (this.attributes[newProp] !== attributes[newProp]) || mounting) {
 
                 if (isEventListener(newProp)) {
-                    domChanges.push(new domOperations.AddEventListener(this.identifier, newProp, attributes[newProp]));
+                    if (!this.attributes[newProp] || mounting) {
+                        domChanges.push(new domOperations.AddEventListener(this.identifier, newProp, attributes[newProp]));
 
-                    this._registeredEventListeners[newProp] = attributes[newProp];
-
+                        this._registeredEventListeners[newProp] = attributes[newProp];
+                    }
                 } else if (newProp === "classes") {
                     domChanges.push(new domOperations.SetAttribute(this.identifier, "class", attributes[newProp]));
 
