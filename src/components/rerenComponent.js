@@ -24,7 +24,6 @@ var MountableRerenComponent = {
                                                parentIdentifier, this._previousMountedDom);
     },
     _handleDomComponentChildren: function(identifier, element, componentInstance) {
-        
         if (element.children && componentInstance.children) {
             // removing children
             if ((element.children.length === 0 && componentInstance.children.length > 0) ||
@@ -82,8 +81,7 @@ var MountableRerenComponent = {
 
         var mountRerenComponent = (el, id, parent) => {
             var ComponentConstructor = el.type;
-            var rerenComponent = new ComponentConstructor();
-            rerenComponent.onComponentMount(el.attributes);
+            var rerenComponent = new ComponentConstructor(el.attributes);
             rerenComponent.mount(id);
 
             if (parent && parent.addChild) {
@@ -142,7 +140,7 @@ class BaseController {
  */
 var componentFactory = function(definition) {
 
-    function RerenComponent() {
+    function RerenComponent(parentModel) {
 
         var init = () => {
 
@@ -153,7 +151,7 @@ var componentFactory = function(definition) {
                 this.controller.prototype = new BaseController(this.updateComponent.bind(this));
                 this.controller.constructor = this.controller;
                 var ControllerConstructor = this.controller;
-                this._controllerInstance = new ControllerConstructor();
+                this._controllerInstance = new ControllerConstructor(parentModel || {});
             }
         };
 
@@ -167,15 +165,9 @@ var componentFactory = function(definition) {
             return this.view(model);
         };
 
-        this.onComponentMount = (parentModel) => {
-            if (this._controllerInstance && this._controllerInstance.onMount) {
-                this._controllerInstance.onMount(parentModel);
-            }
-        };
-
-        this.onComponentUpdate = (parentModel) => {
+        this.onComponentUpdate = (updatedParentModel) => {
             if (this._controllerInstance && this._controllerInstance.onUpdate) {
-                this._controllerInstance.onUpdate(parentModel);
+                this._controllerInstance.onUpdate(updatedParentModel);
             }
         };
 

@@ -63,16 +63,16 @@ describe("reren Component lifecycle tests", () => {
     });
 
     describe("when mounting with a nested reren Component", () => {
-        var onMountSpy = sinon.spy();
+        var controllerMounted = sinon.spy();
         var componentInstance;
         var NestedComponent;
 
         beforeEach(() => {
             interceptOperations();
-            onMountSpy.reset();
+            controllerMounted.reset();
             NestedComponent = componentFactory({
-                controller: function() {
-                    this.onMount = (parentModal) => onMountSpy(parentModal);
+                controller: function(parentModel) {
+                    controllerMounted(parentModel);
                 },
                 view: () => new VElement("span", null, "some text")
             });
@@ -98,9 +98,9 @@ describe("reren Component lifecycle tests", () => {
             assert.equal(componentInstance._previousMountedDom.children[0]._previousMountedDom.parentIdentifier, "1_1");
         });
 
-        it("it should call the onMountComponent on the nested component", () => {
-            assert(onMountSpy.calledOnce);
-            assert(onMountSpy.calledWith({ foo: "bar" }));
+        it("it should pass the parent model to the nested component", () => {
+            assert(controllerMounted.calledOnce);
+            assert(controllerMounted.calledWith({ foo: "bar" }));
         });
 
         it("it should apply the correct dom operations", () => {
@@ -198,12 +198,11 @@ describe("reren Component lifecycle tests", () => {
             componentInstance = new Component();
             componentInstance.mount("1_1");
             interceptOperations();
-        }
+        };
 
         it("it should add children when there are children added", () => {
 
             mountAndInterceptOperations(new VElement("ul"));
-            
             componentInstance.view = function updatedView() {
                 return new VElement("ul", null, [
                     new VElement("li", null, "1"),
@@ -228,7 +227,6 @@ describe("reren Component lifecycle tests", () => {
                 new VElement("li", null, "1"),
                 new VElement("li", null, "2")
             ]));
-            
             componentInstance.view = function updatedView() {
                 return new VElement("ul", null, [
                     new VElement("li", null, "2")
@@ -248,7 +246,7 @@ describe("reren Component lifecycle tests", () => {
             assert(operations[2] instanceof InsertElement);
             assert.equal(operations[2].tagName, "li");
             assert.equal(operations[2].innerHtml, "2");
-            
+
             assert.equal(componentInstance._previousMountedDom.children[0].content, "2");
         });
     });
@@ -379,7 +377,7 @@ describe("reren Component lifecycle tests", () => {
 
         var NestedComponentTwo = componentFactory({
             controller: function() {
-                this.onMount = () => controllerMountSpy();
+                controllerMountSpy();
             },
             view: () => new VElement("div", null, "second nested component")
         });
