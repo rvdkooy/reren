@@ -3,6 +3,9 @@
 # reren
 A simple javascript viewengine inspired by viewengines like React, Angular and KnockoutJs
 
+[![video](https://img.youtube.com/vi/vFfNagXrx0k/0.jpg)](https://www.youtube.com/watch?v=vFfNagXrx0k)
+
+
 Example/Idea:
 
 ``` javascript
