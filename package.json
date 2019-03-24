@@ -4,9 +4,8 @@
   "description": "A javascript viewengine",
   "main": "dist/reren.js",
   "scripts": {
-    "test2": "jest",
-    "test": "node ./node_modules/mocha/bin/mocha  --require babel-core/register ./__tests__/*.tests.js",
-    "test-watch": "node ./node_modules/mocha/bin/mocha  --require babel-core/register ./__tests__/*.tests.js -w",
+    "test": "jest",
+    "test-watch": "jest --watch",
     "prepare": "prod",
     "dev": "webpack --mode development",
     "prod": "webpack --mode production"
