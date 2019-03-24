@@ -13,7 +13,7 @@ describe('domComponent tests', () => {
 
     beforeEach(() => {
         operations = [];
-        stub = sinon.stub(domOperations, "applyDomChanges", (operation) => {
+        stub = sinon.stub(domOperations, "applyDomChanges").callsFake(operation => {
             if (!operations.intercept) return;
             operations.push(operation);
         });

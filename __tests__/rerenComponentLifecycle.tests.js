@@ -15,7 +15,7 @@ describe("reren Component lifecycle tests", () => {
 
     beforeEach(() => {
         operations = [];
-        stub = sinon.stub(domOperations, "applyDomChanges", (operation) => {
+        stub = sinon.stub(domOperations, "applyDomChanges").callsFake(operation => {
             if (!operations.intercept) return;
             operations.push(operation);
         });
@@ -69,7 +69,7 @@ describe("reren Component lifecycle tests", () => {
 
         beforeEach(() => {
             interceptOperations();
-            controllerMounted.reset();
+            controllerMounted. resetHistory();
             NestedComponent = componentFactory({
                 controller: function(parentModel) {
                     controllerMounted(parentModel);
@@ -267,8 +267,8 @@ describe("reren Component lifecycle tests", () => {
         });
 
         beforeEach(() => {
-            controllerUpdateSpy.reset();
-            viewUpdateSpy.reset();
+            controllerUpdateSpy. resetHistory();
+            viewUpdateSpy. resetHistory();
 
             var RootComponent = componentFactory({
                 view: () => new VElement("div", null, new VElement(NestedComponent, { foo: "bar" }))
@@ -340,8 +340,8 @@ describe("reren Component lifecycle tests", () => {
         });
 
         beforeEach(() => {
-            firstControllerUnmountSpy.reset();
-            secondControllerUnmountSpy.reset();
+            firstControllerUnmountSpy. resetHistory();
+            secondControllerUnmountSpy. resetHistory();
 
             var RootComponent = componentFactory({
                 view: () => new VElement("div", null, new VElement(NestedComponentOne))
@@ -383,8 +383,8 @@ describe("reren Component lifecycle tests", () => {
         });
 
         beforeEach(() => {
-            controllerUnmountSpy.reset();
-            controllerMountSpy.reset();
+            controllerUnmountSpy. resetHistory();
+            controllerMountSpy. resetHistory();
 
             var RootComponent = componentFactory({
                 view: () => new VElement("div", null, new VElement(NestedComponentOne))

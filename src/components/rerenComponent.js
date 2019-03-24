@@ -20,8 +20,12 @@ var MountableRerenComponent = {
         var parentIdentifier = this.identifier.substring(0, this.identifier.lastIndexOf("_"));
         var rootElement = this.getView();
 
-        this._previousMountedDom = this._parseVElement(rootElement, this.identifier,
-                                               parentIdentifier, this._previousMountedDom);
+        this._previousMountedDom = this._parseVElement(
+            rootElement,
+            this.identifier,
+            parentIdentifier,
+            this._previousMountedDom
+        );
     },
     _handleDomComponentChildren: function(identifier, element, componentInstance) {
         if (element.children && componentInstance.children) {
@@ -39,11 +43,13 @@ var MountableRerenComponent = {
         if (element.children && element.children.length) {
 
             element.children.forEach((child, index) => {
-                this._parseVElement(child,
-                                    identifier + "_" + (index + 1),
-                                    identifier,
-                                    componentInstance.children[index],
-                                    componentInstance);
+                this._parseVElement(
+                    child,
+                    identifier + "_" + (index + 1),
+                    identifier,
+                    componentInstance.children[index],
+                    componentInstance
+                );
             });
         }
     },
@@ -100,7 +106,6 @@ var MountableRerenComponent = {
             } else {
                 prevCompInstance.unmount();
                 prevCompInstance = null;
-                console.log(vElement.attributes);
                 reRenComponentInstance = mountRerenComponent(vElement, identifier, parentCompInstance);
             }
         }
@@ -110,12 +115,22 @@ var MountableRerenComponent = {
         var componentInstance = null;
 
         if (typeof vElement.type === "string") {
-            componentInstance = this._handleDomComponent(vElement, identifier, parentIdentifier,
-                                                         prevCompInstance, parentCompInstance);
+            componentInstance = this._handleDomComponent(
+                vElement,
+                identifier,
+                parentIdentifier,
+                prevCompInstance,
+                parentCompInstance,
+            );
 
         } else if (typeof vElement.type === "function") {
-            componentInstance = this._handleRerenComponent(vElement, identifier, parentIdentifier,
-                                                           prevCompInstance, parentCompInstance);
+            componentInstance = this._handleRerenComponent(
+                vElement,
+                identifier,
+                parentIdentifier,
+                prevCompInstance,
+                parentCompInstance
+            );
         }
 
         return componentInstance;
@@ -128,8 +143,6 @@ class BaseController {
         //this.onUpdate = function(){ };
         this.model = {};
     }
-
-    update;
 }
 
 /**

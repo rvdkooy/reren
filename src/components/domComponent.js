@@ -5,13 +5,15 @@ class DomComponentMountable {
     constructor() {
         this._registeredEventListeners = {};
     }
-    _registeredEventListeners;
-
     mount() {
-        domOperations.applyDomChanges(new domOperations.InsertElement(this.parentIdentifier,
-                                            this.identifier,
-                                            this.tagName,
-                                            this.content));
+        domOperations.applyDomChanges(
+            new domOperations.InsertElement(
+                this.parentIdentifier,
+                this.identifier,
+                this.tagName,
+                this.content
+            )
+        );
         this._handleAttributes(this.attributes, true);
     }
 
@@ -32,6 +34,7 @@ class DomComponentMountable {
             for (var i = 0; i < events.length; i++) {
                 if (events[i] === property.toLowerCase()) return true;
             }
+            return false;
         };
 
         for (var newProp in attributes) {

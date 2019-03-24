@@ -1,4 +1,5 @@
-var webpack = require("webpack");
+// const webpack = require("webpack");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 var webpackConfig = {
     context: __dirname + "/src",
@@ -13,14 +14,29 @@ var webpackConfig = {
         libraryTarget: 'umd'
     },
     plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-            include: /\.min\.js$/,
-            minimize: true
-        })
+
     ],
     module: {
-        loaders: [
-            {test: /\.jsx?$/, exclude: [/node_modules/], loader: "babel-loader"}
+        rules: [
+            {
+              enforce: "pre",
+              test: /\.js$/,
+              exclude: /node_modules/,
+              loader: "eslint-loader"
+            },
+            {
+              test: /\.js$/,
+              exclude: /node_modules/,
+              loader: "babel-loader"
+            }
+          ]
+    },
+    optimization: {
+        minimizer: [
+            new UglifyJsPlugin({
+                include: /\.min\.js$/,
+                // minimize: true
+            })
         ]
     }
 };
