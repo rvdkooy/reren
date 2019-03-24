@@ -8,7 +8,7 @@
     "test-watch": "jest --watch",
     "prepare": "prod",
     "dev": "webpack --mode development",
-    "prod": "webpack --mode production"
+    "build": "webpack --mode production"
   },
   "repository": {
     "type": "git",
