@@ -1,6 +1,6 @@
 {
   "name": "reren",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A javascript viewengine",
   "main": "dist/reren.js",
   "scripts": {
