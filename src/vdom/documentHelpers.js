@@ -5,14 +5,14 @@ var variables = require('../variables');
  * @value               {The value of the internal id}
  * @return {element}    {The element that we are looking for}
  */
-var findElement = function(value) {
-    var element = document.querySelector("*[" + variables.ID_ATTR + "='" + value + "']");
+var findElement = function (value) {
+  var element = document.querySelector("*[" + variables.ID_ATTR + "='" + value + "']");
 
-    if (!element) {
-        throw new Error(`Could not find the element with attribute ${variables.ID_ATTR} and value: ${value}`);
-    }
+  if (!element) {
+    throw new Error(`Could not find the element with attribute ${variables.ID_ATTR} and value: ${value}`);
+  }
 
-    return element;
+  return element;
 };
 
 module.exports.findElement = findElement;

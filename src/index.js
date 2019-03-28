@@ -22,11 +22,11 @@ module.exports.element = vElement;
  * @rootNode         {The root DOM node the render all content on}
  */
 module.exports.start = (rootComponent, rootNode) => {
-    rootNode.setAttribute(variables.ID_ATTR, variables.ROOT_IDENTIFIER);
-    var RootComponent = rootComponent.type;
-    var rootInstance = new RootComponent();
+  rootNode.setAttribute(variables.ID_ATTR, variables.ROOT_IDENTIFIER);
+  var RootComponent = rootComponent.type;
+  var rootInstance = new RootComponent();
 
-    rootInstance.mount(variables.ROOT_IDENTIFIER + "_1");
+  rootInstance.mount(variables.ROOT_IDENTIFIER + "_1");
 };
 
 /**
@@ -34,5 +34,5 @@ module.exports.start = (rootComponent, rootNode) => {
  * example: instead of writing: R.element("div", null, OtherElement); --> R.div(null, OtherElement)
  */
 require('./htmlVariables').elements.forEach(e => {
-    module.exports[e] = (attr, children) => { return vElement(e, attr, children); };
+  module.exports[e] = (attr, children) => { return vElement(e, attr, children); };
 });

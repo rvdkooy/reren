@@ -47,7 +47,6 @@ var MyComponent = R.component({
 
 ```
 
-
 #### Controller
 
 | Method        | Description                                                                       |               
@@ -55,6 +54,29 @@ var MyComponent = R.component({
 | this.onUpdate | Called when the component is updated by it's parent component                     |
 | this.model    | A controller always has a model object available that will be passed to it's view |
 | this.update   | When called, will trigger the view to rerender again (Will also notify child components 'onUpdate')|
+
+#### getReactiveModel
+If this method is implemented, a reative model will be injected into the controller. Any property that changes afterwards, will automatically call `this.update()` on the controller to instruct the virtual DOM to do the diffing again.
+
+``` javascript
+var R = require('reren');
+
+var MyComponent = R.component({
+  controller: function() {
+    self = this;
+    this.model.someMethod = function () {
+      self.model.foo = 'baz'; // will call this.update() automatically
+    }
+  },
+  getReactiveModel: function () {
+    return { foo: 'bar' };
+  },
+  view: function() {
+    // view logic here
+  }
+});
+
+```
 
 #### View
 The view will be injected with the model from the controller (if the controller is defined) and it should always return a single VElement instance to be able to construct and compare the virtual dom;

@@ -1,4 +1,4 @@
 module.exports = {
-    ID_ATTR: "DATA-INTERNAL-ID",
-    ROOT_IDENTIFIER: "1"
+  ID_ATTR: "DATA-INTERNAL-ID",
+  ROOT_IDENTIFIER: "1"
 };

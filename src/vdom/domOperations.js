@@ -2,7 +2,7 @@ var variables = require('../variables');
 var documentHelpers = require('./documentHelpers');
 
 var applyDomChanges = (operation) => {
-    operation.apply();
+  operation.apply();
 };
 
 /**
@@ -14,30 +14,30 @@ var applyDomChanges = (operation) => {
  */
 class InsertElement {
 
-    constructor(parentIdentifier, identifier, tagName, innerHtml) {
-        if (!parentIdentifier) {
-            throw new Error("For inserting we need a parentIdentifier");
-        }
-
-        if (!identifier) throw new Error("For inserting we need an indentifier");
-        if (!tagName) throw new Error("For inserting we need an tagName");
-
-        this.parentIdentifier = parentIdentifier;
-        this.identifier = identifier;
-        this.tagName = tagName;
-        this.innerHtml = innerHtml;
+  constructor(parentIdentifier, identifier, tagName, innerHtml) {
+    if (!parentIdentifier) {
+      throw new Error("For inserting we need a parentIdentifier");
     }
 
-    apply() {
-        var element = document.createElement(this.tagName);
-        element.setAttribute(variables.ID_ATTR, this.identifier);
+    if (!identifier) throw new Error("For inserting we need an indentifier");
+    if (!tagName) throw new Error("For inserting we need an tagName");
 
-        if (this.innerHtml) {
-            element.innerHTML = this.innerHtml;
-        }
+    this.parentIdentifier = parentIdentifier;
+    this.identifier = identifier;
+    this.tagName = tagName;
+    this.innerHtml = innerHtml;
+  }
 
-        documentHelpers.findElement(this.parentIdentifier).appendChild(element);
+  apply() {
+    var element = document.createElement(this.tagName);
+    element.setAttribute(variables.ID_ATTR, this.identifier);
+
+    if (this.innerHtml) {
+      element.innerHTML = this.innerHtml;
     }
+
+    documentHelpers.findElement(this.parentIdentifier).appendChild(element);
+  }
 }
 
 /**
@@ -47,14 +47,14 @@ class InsertElement {
  */
 class SetInnerHtml {
 
-    constructor(identifier, innerHtml) {
-        this.identifier = identifier;
-        this.innerHtml = innerHtml;
-    }
+  constructor(identifier, innerHtml) {
+    this.identifier = identifier;
+    this.innerHtml = innerHtml;
+  }
 
-    apply() {
-        documentHelpers.findElement(this.identifier).innerHTML = this.innerHtml;
-    }
+  apply() {
+    documentHelpers.findElement(this.identifier).innerHTML = this.innerHtml;
+  }
 }
 
 /**
@@ -63,75 +63,75 @@ class SetInnerHtml {
  * @identifier           {The identifier of the element we want to remove from the DOM}
  */
 class RemoveElement {
-    constructor(parentIdentifier, identifier) {
-        this.parentIdentifier = parentIdentifier;
-        this.identifier = identifier;
-    }
+  constructor(parentIdentifier, identifier) {
+    this.parentIdentifier = parentIdentifier;
+    this.identifier = identifier;
+  }
 
-    apply() {
-        documentHelpers.findElement(this.parentIdentifier).removeChild(documentHelpers.findElement(this.identifier));
-    }
+  apply() {
+    documentHelpers.findElement(this.parentIdentifier).removeChild(documentHelpers.findElement(this.identifier));
+  }
 }
 
 class SetAttribute {
-    constructor(identifier, attributeName, attributeValue) {
-        this.identifier = identifier;
-        this.attributeName = attributeName;
-        this.attributeValue = attributeValue;
-    }
+  constructor(identifier, attributeName, attributeValue) {
+    this.identifier = identifier;
+    this.attributeName = attributeName;
+    this.attributeValue = attributeValue;
+  }
 
-    apply() {
-        documentHelpers.findElement(this.identifier).setAttribute(this.attributeName, this.attributeValue);
-    }
+  apply() {
+    documentHelpers.findElement(this.identifier).setAttribute(this.attributeName, this.attributeValue);
+  }
 }
 
 class RemoveAttribute {
-    constructor(identifier, attributeName) {
-        this.identifier = identifier;
-        this.attributeName = attributeName;
-    }
+  constructor(identifier, attributeName) {
+    this.identifier = identifier;
+    this.attributeName = attributeName;
+  }
 
-    apply() {
-        documentHelpers.findElement(this.identifier).removeAttribute(this.attributeName);
-    }
+  apply() {
+    documentHelpers.findElement(this.identifier).removeAttribute(this.attributeName);
+  }
 }
 
 class AddEventListener {
-    constructor(identifier, eventName, handler) {
-        this.identifier = identifier;
-        this.eventName = eventName;
-        this.handler = handler;
-    }
+  constructor(identifier, eventName, handler) {
+    this.identifier = identifier;
+    this.eventName = eventName;
+    this.handler = handler;
+  }
 
-    apply() {
-        var shortEventName = this.eventName.toLowerCase().substring(2);
-        documentHelpers.findElement(this.identifier).addEventListener(shortEventName, this.handler);
-    }
+  apply() {
+    var shortEventName = this.eventName.toLowerCase().substring(2);
+    documentHelpers.findElement(this.identifier).addEventListener(shortEventName, this.handler);
+  }
 }
 
 class RemoveEventListener {
-    constructor(identifier, eventName, handler) {
-        this.identifier = identifier;
-        this.eventName = eventName;
-        this.handler = handler;
-    }
+  constructor(identifier, eventName, handler) {
+    this.identifier = identifier;
+    this.eventName = eventName;
+    this.handler = handler;
+  }
 
-    apply() {
-        var shortEventName = this.eventName.toLowerCase().substring(2);
-        documentHelpers.findElement(this.identifier).removeEventListener(shortEventName, this.handler);
-    }
+  apply() {
+    var shortEventName = this.eventName.toLowerCase().substring(2);
+    documentHelpers.findElement(this.identifier).removeEventListener(shortEventName, this.handler);
+  }
 }
 
 /**
  * Exports
  */
 module.exports = {
-    applyDomChanges,
-    InsertElement,
-    RemoveElement,
-    SetAttribute,
-    RemoveAttribute,
-    SetInnerHtml,
-    AddEventListener,
-    RemoveEventListener
+  applyDomChanges,
+  InsertElement,
+  RemoveElement,
+  SetAttribute,
+  RemoveAttribute,
+  SetInnerHtml,
+  AddEventListener,
+  RemoveEventListener
 };
